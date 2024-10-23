@@ -11,7 +11,10 @@ from app.database.requests import *
 from app.utils.state import User
 from app.utils.utils import *
 import app.keyboards.keyboard_main as kb
+from decouple import config
 
+ID_CHANNEL = int(config('ID_CHANNEL'))
+ID_CHAT = int(config('ID_CHAT'))
 router_main = Router()
 
 
@@ -41,7 +44,7 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
             await message.answer("Ты не можешь быть рефералом, тк бот уже запущен")
 
         ref = encode_payload(message.from_user.id)
-        await message.answer('Меню', reply_markup=kb.get_menu_btn(ref))
+        await message.answer('Меню', reply_markup=kb.get_menu_btn(ref), parse_mode="HTML")
 
 
 @router_main.callback_query(F.data == 'menu')
@@ -272,13 +275,14 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
 
 
 # ===========================================Комментарии из чата========================================================
-@router_main.message(F.forward_origin.chat.id == -1002434882214)  # ID КАНАЛА
+
+@router_main.message(F.forward_origin.chat.id == ID_CHANNEL)  # ID КАНАЛА
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
     print("Новый пост")
     add_new_id_post(message.message_id)
 
 
-@router_main.message(F.chat.id == -1002482088958, F.text, F.reply_to_message, F.from_user.is_bot == False)  # ID ЧАТА
+@router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False)  # ID ЧАТА
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
     user = await get_user(message.from_user.id)
     if message.reply_to_message.message_id in list_channel_message and user and not user.send_comment:
