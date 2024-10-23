@@ -1,6 +1,6 @@
 import os
 # from qreader import QReader
-import cv2
+# import cv2
 
 with open('app/utils/posts_id.txt') as file:
     list_channel_message = [int(elem) for elem in file.readline().split()]
