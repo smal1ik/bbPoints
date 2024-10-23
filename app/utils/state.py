@@ -5,4 +5,6 @@ class User(StatesGroup):
     start = State()
     load_image_check = State()
     wait_repost = State()
+    wait_link = State()
+    wait_link_video = State()
     end = State()

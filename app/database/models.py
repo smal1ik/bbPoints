@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger
+from sqlalchemy import BigInteger, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
 from decouple import config
@@ -19,6 +19,7 @@ class User(Base):
     first_name: Mapped[str] = mapped_column()
     username: Mapped[str] = mapped_column()
     user_refs = mapped_column(BigInteger, nullable=True) # рефка
+    send_comment = mapped_column(Boolean, default=False)
 
 
 class Point(Base):
@@ -53,6 +54,14 @@ class SocialNetwork(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     tg_id = mapped_column(BigInteger)
     social_network: Mapped[str] = mapped_column()
+    social_network_link: Mapped[str] = mapped_column()
+
+
+class LinkVideo(Base):
+    __tablename__ = 'links_videos'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tg_id = mapped_column(BigInteger)
+    link_video: Mapped[str] = mapped_column()
 
 
 async def async_main():

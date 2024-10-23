@@ -1,5 +1,7 @@
-from app.database.models import User, async_session, Point, SocialNetwork, Check, Channel, Post
+from app.database.models import User, async_session, Point, SocialNetwork, Check, Channel, Post, LinkVideo
 from sqlalchemy import select, BigInteger, update, delete, func
+
+from app.utils import api
 
 
 async def add_user(tg_id: BigInteger, first_name: str, username: str, user_refs: BigInteger):
@@ -17,9 +19,24 @@ async def add_user(tg_id: BigInteger, first_name: str, username: str, user_refs:
 
         #ПОМЕНЯТЬ НА АПИ ОТ ВОЛОДИ
         if user_refs:
-            await add_points(user_refs, 5)
+            api.add_points(user_refs, 5)
+
+async def user_send_comment(tg_id: BigInteger):
+    async with async_session() as session:
+        await session.execute(update(User).where(User.tg_id == tg_id).values(
+            send_comment=True)
+        )
+        await session.commit()
+
+async def user_reset_send_comment(tg_id: BigInteger):
+    async with async_session() as session:
+        await session.execute(update(User).where(User.tg_id == tg_id).values(
+            send_comment=False)
+        )
+        await session.commit()
 
 
+# НЕ НУЖНО
 async def add_points(tg_id: BigInteger, n_points):
     """
         Функция добавляет n баллов пользователю
@@ -66,6 +83,13 @@ async def add_channel(channel_id: BigInteger):
         session.add(Channel(channel_id=channel_id))
         await session.commit()
 
+async def reset_all_channel():
+    async with async_session() as session:
+        await session.execute(update(Channel).where(True).values(
+            number_post=0)
+        )
+        await session.commit()
+
 
 async def add_number_post_channel(channel_id: BigInteger):
     async with async_session() as session:
@@ -90,4 +114,46 @@ async def add_post(channel_id: BigInteger, post_id: BigInteger):
 async def get_post(channel_id: BigInteger, post_id: BigInteger):
     async with async_session() as session:
         result = await session.scalar(select(Post).where(Post.channel_id == channel_id, Post.post_id == post_id))
+    return result
+
+
+async def add_social_network(tg_id: BigInteger, social_network: str, social_network_link: str):
+    async with async_session() as session:
+        session.add(SocialNetwork(tg_id=tg_id, social_network=social_network, social_network_link=social_network_link))
+        await session.commit()
+
+
+async def get_social_networks(tg_id: BigInteger):
+    async with async_session() as session:
+        result = await session.scalars(select(SocialNetwork).where(SocialNetwork.tg_id == tg_id))
+    return result.fetchall()
+
+async def get_social_network(tg_id: BigInteger, social_network):
+    async with async_session() as session:
+        result = await session.scalar(select(SocialNetwork).where(SocialNetwork.tg_id == tg_id,
+                                                                   SocialNetwork.social_network == social_network))
+    return result
+
+async def search_sn_link(social_network_link):
+    async with async_session() as session:
+        result = await session.scalar(select(SocialNetwork).where(SocialNetwork.social_network_link == social_network_link))
+    return result
+
+
+async def del_social_networks(tg_id: BigInteger, social_network: str):
+    async with async_session() as session:
+        result = await session.execute(delete(SocialNetwork).where(SocialNetwork.tg_id == tg_id,
+                                                                  SocialNetwork.social_network == social_network))
+        await session.commit()
+    return result
+
+
+async def add_link_video(tg_id: BigInteger, link_video: str):
+    async with async_session() as session:
+        session.add(LinkVideo(tg_id=tg_id, link_video=link_video))
+        await session.commit()
+
+async def search_link_video(link_video):
+    async with async_session() as session:
+        result = await session.scalar(select(LinkVideo).where(LinkVideo.link_video == link_video))
     return result
