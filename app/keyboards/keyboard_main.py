@@ -64,7 +64,7 @@ def get_menu_btn(ref: str):
     menu_btn.row(
         types.InlineKeyboardButton(
             text="Поделиться ботом",
-            url=f'tg://msg_url?url={url}&text={text}')
+            url=f'https://telegram.me/share/url?url={url}&text={text}')
     )
     menu_btn = menu_btn.as_markup()
     return menu_btn
