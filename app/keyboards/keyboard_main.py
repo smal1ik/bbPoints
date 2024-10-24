@@ -2,7 +2,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram import types
 
 from app.database.requests import get_social_networks
-sn_list = ['Likee', 'TikTok', 'VK', 'Instagram']
+sn_list = ['Likee', 'TikTok', 'VK']
 
 web_app_info = types.WebAppInfo(url="https://t.me/beauty_bomb_bot/BeautyBombApp")
 web_app_button = types.menu_button_web_app.MenuButtonWebApp(web_app=web_app_info, text='START', type='web_app')
@@ -12,7 +12,7 @@ web_app_button = types.menu_button_web_app.MenuButtonWebApp(web_app=web_app_info
 sn_link_btn = InlineKeyboardBuilder()
 sn_link_btn.row(
     types.InlineKeyboardButton(
-        text="ВИДО ЗАЛИТЕЛО!!!",
+        text="ВИДЕО ЗАЛИТЕЛО!!!",
         callback_data="flood")
 )
 sn_link_btn.row(
@@ -117,18 +117,18 @@ async def get_sn_btn(tg_id: int):
     return sn_btn, check
 
 list_point = ['100', '200', '400', '800', '1500']
-def get_points_btn(tg_id: int, link_video):
+def get_points_btn(tg_id: int):
     points_btn = InlineKeyboardBuilder()
     for elem in list_point:
         points_btn.row(
             types.InlineKeyboardButton(
                 text=elem,
-                callback_data=f"points__{elem}__{tg_id}__{link_video}")
+                callback_data=f"points__{elem}__{tg_id}")
         )
     points_btn.row(
         types.InlineKeyboardButton(
             text='Отказ',
-            callback_data=f"points__0__{tg_id}__{link_video}")
+            callback_data=f"points__0__{tg_id}")
     )
     points_btn = points_btn.as_markup()
     return points_btn

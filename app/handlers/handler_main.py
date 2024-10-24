@@ -119,7 +119,7 @@ async def answer_message(message: types.Message, state: FSMContext):
     elif post:
         await message.answer("Данный пост уже был принят")
     else:
-        await message.answer("Пост принят")
+        await message.answer("Поздравляю! Ты заработала свои 20 ВВ-баллов за этот постик 💙")
         await add_post(id_channel, id_post)
         await add_number_post_channel(id_channel)
         api.add_points(message.from_user.id, 40)
@@ -140,7 +140,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     await state.set_state(User.start)
     btns, check = await kb.get_sn_btn(callback.from_user.id)
     if check:
-        msg = """Что будешь делать дальше?"""
+        msg = """Мои аккаунты ✨"""
     else:
         msg = """Привяжи свой аккаунт ко мне и дай знать, когда видео залетит!"""
 
@@ -168,7 +168,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     await del_social_networks(callback.from_user.id, name_sn)
     btns, check = await kb.get_sn_btn(callback.from_user.id)
     if check:
-        msg = """Что будешь делать дальше?"""
+        msg = """Мои аккаунты ✨"""
     else:
         msg = """Привяжи свой аккаунт ко мне и дай знать, когда видео залетит!"""
 
@@ -178,7 +178,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 @router_main.callback_query(F.data.contains('connect'))
 async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     sn = callback.data.split('_')[1]
-    msg = f"Жду ссылку на твой аккаунт {sn}"
+    msg = f"Кидай ссылку на свой аккаунт 🔗"
     await callback.message.answer(msg, reply_markup=kb.single_menu_btn)
     await state.set_state(User.wait_link)
     await state.set_data({"connect": sn})
@@ -191,22 +191,20 @@ async def answer_message(message: types.Message, state: FSMContext):
     link = message.text.replace('https://', '')
     result = await search_sn_link(link)
     if not sn.lower() in link.lower():
-        msg = """Ссылка не подходит! 
-Проверь, что ты прислала ссылку на аккаунт из выбранной ранее соцсети"""
+        msg = """Ссылка не подходит!\nУбедись, что это ссылка на твой аккаунт в соцсети, которую ты изначально выбрала⛓️‍💥"""
         await message.answer(msg)
     elif result:
-        msg = """Ссылка не подходит!
-Проверь, чтобы эта ссылка не была привязана с другой страницы"""
+        msg = """Ссылка не подходит!\nУбедись, чтобы эта ссылка не была привязана с другой страницы⛓️‍💥"""
         await message.answer(msg)
     else:
         await add_social_network(message.from_user.id, sn, link)
-        msg = f"Ты успешно привязала {sn}"
+        msg = f"Супер! Ты успешно привязала свой аккаунт ко мне 甆"
         await message.answer(msg)
 
     btns, check = await kb.get_sn_btn(message.from_user.id)
 
     if check:
-        msg = """Что будешь делать дальше?"""
+        msg = """Мои аккаунты ✨"""
     else:
         msg = """Привяжи свой аккаунт ко мне и дай знать, когда видео залетит!"""
 
@@ -216,7 +214,7 @@ async def answer_message(message: types.Message, state: FSMContext):
 @router_main.callback_query(F.data == 'flood')
 async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     await state.set_state(User.wait_link_video)
-    msg = "Это замечательно\nСкинь ссылку на видео\nПосле проверки мы напишем и зачислим баллы"
+    msg = "Ура! Очень рад за тебя 💋\n\nПришли мне ссылку на видео, его проверят и в случае, если всё супер — начислят тебе баллы 😮‍💨"
     await callback.message.answer(msg, reply_markup=kb.single_back_btn)
 
 
@@ -229,16 +227,14 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
     link_video = message.text.replace('https://', '')
     result = await search_link_video(link_video)
     if not sn.lower() in link_video.lower():
-        msg = """Упс! Видео не засчитано 
-Проверь, что ты прислала ссылку на видео из выбранной ранее соцсети"""
+        msg = """Упс! Видео не засчитано😭\n\nПроверь, что ты прислала ссылку на видео из выбранной ранее соцсети 🔍"""
         await message.answer(msg)
     elif result:
-        msg = """Упс! Видео не засчитано
-Проверь, чтобы эта ссылка ещё не была использована ранее """
+        msg = """Упс! Видео не засчитано😭\n\nПроверь, чтобы эта ссылка ещё не была использована ранее 🔍"""
         await message.answer(msg)
     else:
         await add_link_video(message.from_user.id, link_video)
-        msg = f"Твоё видео во всю проверяют!\nПодожди немного"
+        msg = f"Твоё видео проходит проверку, нужно немного подождать 羅"
         await message.answer(msg)
 
         msg = f"""
@@ -255,25 +251,25 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
 
         await bot.send_message(-4585659208,
                                msg,
-                               reply_markup=kb.get_points_btn(message.from_user.id, link_video),
+                               reply_markup=kb.get_points_btn(message.from_user.id),
                                disable_web_page_preview=True)
 
     btns, check = await kb.get_sn_btn(message.from_user.id)
 
-    msg = """Что будешь делать дальше?"""
+    msg = """Мои аккаунты ✨"""
 
     await message.answer(msg, reply_markup=btns)
 
 
 @router_main.callback_query(F.data.contains('points'))
 async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
-    _, points, tg_id, link_video = callback.data.split('__')
+    _, points, tg_id = callback.data.split('__')
     await callback.message.edit_reply_markup()
     if points == '0':
-        msg = f"Видео {link_video} не соответствует условиям"
+        msg = f"Видео не соответствует условиям"
         await bot.send_message(tg_id, msg)
     else:
-        msg = f"Видео {link_video} залетело\nМолодец, мы зачислили тебе {points} баллов"
+        msg = f"Молодец! Тебе уже зачислили баллы за этот видосик, можешь проверять 😈"
         await bot.send_message(tg_id, msg)
         api.add_points(int(tg_id), int(points))
 
