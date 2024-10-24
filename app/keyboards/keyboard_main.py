@@ -62,7 +62,7 @@ def get_menu_btn(ref: str):
     menu_btn.row(
         types.InlineKeyboardButton(
             text="Поделиться ботом",
-            url=f'https://t.me/share/url?url=t.me/smallik1_bot?start={ref}&text=Присоединяйся в бота')
+            url=f'https://t.me/share/url?url=t.me/smallik1_bot?start={ref}&text=Присоединяйся\\ в\\ бота')
     )
     menu_btn = menu_btn.as_markup()
     return menu_btn
