@@ -288,8 +288,8 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
 @router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False)  # ID ЧАТА
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
     user = await get_user(message.from_user.id)
-    print(message.forward_from_message_id)
-    if (message.forward_from_message_id in list_channel_message) and user and not user.send_comment:
+    print(message.forward_origin.message_id)
+    if (message.forward_origin.message_id in list_channel_message) and user and not user.send_comment:
         await bot.send_message(message.from_user.id, "Ты оставил комментарий, получай 10 баллов")
         api.add_points(message.from_user.id, 10)
         await user_send_comment(message.from_user.id)
