@@ -93,10 +93,12 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     await state.set_state(User.wait_repost)
 
 
-@router_main.message(User.wait_repost, F.forward_from_chat[F.type == "channel"].as_("channel"), F.text)
+@router_main.message(User.wait_repost, F.forward_from_chat[F.type == "channel"].as_("channel"), ((F.text) | (F.caption)))
 async def answer_message(message: types.Message, state: FSMContext):
-    print(message)
-    text = message.text.lower()
+    if message.text.lower():
+        text = message.text.lower()
+    else:
+        text = message.caption.lower()
     id_post = message.forward_from_message_id
     id_channel = message.forward_from_chat.id
     channel = await get_channel(id_channel)
@@ -126,7 +128,7 @@ async def answer_message(message: types.Message, state: FSMContext):
     await message.answer('Меню', reply_markup=kb.get_menu_btn(ref))
 
 
-@router_main.message(User.wait_repost)
+@router_main.message(User.wait_repost, ((F.text) | (F.caption)))
 async def answer_message(message: types.Message, state: FSMContext):
     await message.answer('Нужно переслать сообщение из канала', reply_markup=kb.single_menu_btn)
 
