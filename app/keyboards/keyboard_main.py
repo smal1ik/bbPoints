@@ -43,7 +43,7 @@ sure_btn = sure_btn.as_markup()
 
 
 def get_menu_btn(ref: str):
-    text = "Присоединяйся в бота"
+    text = "Присоединяйся%20в%20бота"
     menu_btn = InlineKeyboardBuilder()
     # menu_btn.row(
     #     types.InlineKeyboardButton(
