@@ -44,7 +44,7 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
             await message.answer("Ты не можешь быть рефералом, тк бот уже запущен")
 
         ref = encode_payload(message.from_user.id)
-        await message.answer('Меню', reply_markup=kb.get_menu_btn(ref), parse_mode="markdown")
+        await message.answer('Меню', reply_markup=kb.get_menu_btn(ref))
 
 
 @router_main.callback_query(F.data == 'menu')
