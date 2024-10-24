@@ -287,6 +287,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
 
 @router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False)  # ID ЧАТА
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
+    print(message)
     user = await get_user(message.from_user.id)
     if message.reply_to_message.message_id in list_channel_message and user and not user.send_comment:
         await bot.send_message(message.from_user.id, "Ты оставил комментарий, получай 10 баллов")
