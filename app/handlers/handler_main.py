@@ -276,9 +276,9 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
 
 # ===========================================Комментарии из чата========================================================
 
-@router_main.message(F.forward_origin.chat.id == ID_CHANNEL)  # ID КАНАЛА
-async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
-    print(message.json())
+
+@router_main.channel_post(F.chat.id == ID_CHANNEL)
+async def answer_message(message: types.Message):
     print("Новый пост")
     add_new_id_post(message.message_id)
 

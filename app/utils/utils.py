@@ -21,6 +21,8 @@ print(list_channel_message)
 #     return None
 
 synonym_bb = ['t.me/beautybombrussia', 't.me/beautybomb', '@beautybomb', '@beautybombrussia']
+
+
 def bb_post_check(text: str):
     text = text.lower()
     for elem in synonym_bb:
