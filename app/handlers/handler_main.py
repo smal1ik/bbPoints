@@ -93,7 +93,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     await state.set_state(User.wait_repost)
 
 
-@router_main.message(User.wait_repost, F.forward_from_chat[F.type == "channel"].as_("channel"), )
+@router_main.message(User.wait_repost, F.forward_from_chat[F.type == "channel"].as_("channel"), F.text)
 async def answer_message(message: types.Message, state: FSMContext):
     print(message)
     text = message.text.lower()
