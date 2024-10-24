@@ -19,7 +19,7 @@ async def add_user(tg_id: BigInteger, first_name: str, username: str, user_refs:
 
         #ПОМЕНЯТЬ НА АПИ ОТ ВОЛОДИ
         if user_refs:
-            api.add_points(user_refs, 5)
+            api.add_points(user_refs, 20)
 
 async def user_send_comment(tg_id: BigInteger):
     async with async_session() as session:

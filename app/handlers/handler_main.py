@@ -93,8 +93,9 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     await state.set_state(User.wait_repost)
 
 
-@router_main.message(User.wait_repost, F.forward_from_chat[F.type == "channel"].as_("channel"))
+@router_main.message(User.wait_repost, F.forward_from_chat[F.type == "channel"].as_("channel"), )
 async def answer_message(message: types.Message, state: FSMContext):
+    print(message)
     text = message.text.lower()
     id_post = message.forward_from_message_id
     id_channel = message.forward_from_chat.id
@@ -118,7 +119,7 @@ async def answer_message(message: types.Message, state: FSMContext):
         await message.answer("Пост принят")
         await add_post(id_channel, id_post)
         await add_number_post_channel(id_channel)
-        api.add_points(message.from_user.id, 45)
+        api.add_points(message.from_user.id, 40)
 
     await state.set_state(User.start)
     ref = encode_payload(message.from_user.id)
@@ -286,7 +287,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
     user = await get_user(message.from_user.id)
     if message.reply_to_message.message_id in list_channel_message and user and not user.send_comment:
-        await bot.send_message(message.from_user.id, "Ты оставил комментарий, получай XX баллов")
+        await bot.send_message(message.from_user.id, "Ты оставил комментарий, получай 10 баллов")
         api.add_points(message.from_user.id, 10)
         await user_send_comment(message.from_user.id)
         await arqredis.enqueue_job(
