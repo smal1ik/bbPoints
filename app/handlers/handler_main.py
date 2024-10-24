@@ -289,6 +289,9 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
     print(message)
     user = await get_user(message.from_user.id)
+    print(bool(message.reply_to_message.message_id in list_channel_message))
+    print(user)
+    print(user.send_comment)
     if message.reply_to_message.message_id in list_channel_message and user and not user.send_comment:
         await bot.send_message(message.from_user.id, "Ты оставил комментарий, получай 10 баллов")
         api.add_points(message.from_user.id, 10)
