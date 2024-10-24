@@ -1,6 +1,6 @@
 import requests
 
-url = "https://cg39988-wordpress-wj0ce.tw1.ru/wp-json/games/v1/update_points/"
+url = "https://beauty-bomb-app.ru/wp-json/games/v1/update_points/"
 
 
 def add_points(telegram_id: int, points: int) -> None:
