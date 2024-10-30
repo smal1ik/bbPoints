@@ -8,6 +8,7 @@ from aiogram.utils.deep_linking import create_start_link, decode_payload, encode
 from arq import ArqRedis
 
 from app.database.requests import *
+from app.utils import copy
 from app.utils.state import User
 from app.utils.utils import *
 import app.keyboards.keyboard_main as kb
@@ -38,20 +39,20 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 
         if not user:
             await bot.set_chat_menu_button(message.from_user.id, menu_button=kb.web_app_button)
-            await message.answer('Приветственное сообщение')
+            await message.answer(copy.start_msg)
             await add_user(message.from_user.id, message.from_user.first_name, message.from_user.username, int(ref))
         elif ref:
-            await message.answer("Ты не можешь быть рефералом, тк бот уже запущен")
+            await message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
 
         ref = encode_payload(message.from_user.id)
-        await message.answer('Меню', reply_markup=kb.get_menu_btn(ref))
+        await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
 
 @router_main.callback_query(F.data == 'menu')
 async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     await state.set_state(User.start)
     ref = encode_payload(callback.from_user.id)
-    await callback.message.answer('Меню', reply_markup=kb.get_menu_btn(ref))
+    await callback.message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
 
 # ===========================================ЧЕК=========================================================
@@ -79,7 +80,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 #             await message.answer("Отлично, ты заработала ХХ баллов")
 #             await state.set_state(User.start)
 #             ref = encode_payload(message.from_user.id)
-#             await message.answer('Меню', reply_markup=kb.get_menu_btn(ref))
+#             await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 #     else:
 #         await message.answer("Не удалось распознать куар-код\nПопробуй ещё раз",
 #                              reply_markup=kb.single_menu_btn)
@@ -88,7 +89,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 # ================================Проверить упоминание в посте===================================================
 @router_main.callback_query(F.data == 'mention')
 async def answer_message(callback: types.CallbackQuery, state: FSMContext):
-    await callback.message.answer("Перешли сюда пост из канала",
+    await callback.message.answer(copy.mention_msg,
                                   reply_markup=kb.single_menu_btn)
     await state.set_state(User.wait_repost)
 
@@ -109,7 +110,6 @@ async def answer_message(message: types.Message, state: FSMContext):
     else:
         count_post = channel.number_post
     post = await get_post(id_channel, id_post)
-
     # if id_post <= 30:
     #     await message.answer("Маленькая группа, меньше 30 постов")
     # elif bb_post_check(text):
@@ -119,16 +119,7 @@ async def answer_message(message: types.Message, state: FSMContext):
     # elif post:
     #     await message.answer("Данный пост уже был принят")
     if id_post <= 30 or bb_post_check(text) or count_post >= 3 or post:
-        msg = """Не могу начислить баллы за этот пост 梁
-
-Причины могут быть разные:
--  ты прислала уже три поста за эту неделю, значит лимит исчерпан, пришли пост на следующей неделе;
-- пост должен быть минимум 30-м на канале;
-- в посте нет упоминания Beauty Bomb;
-- этот пост уже был засчитан другому пользователю.
-
-Проверь свой пост по всем пунктам и возвращайся с ним снова, когда все правила будут выполнены ✨"""
-        await message.answer(msg)
+        await message.answer(copy.error_post_msg)
     else:
         await message.answer("Поздравляю! Ты заработала свои 20 ВВ-баллов за этот постик 💙")
         await add_post(id_channel, id_post)
@@ -137,7 +128,7 @@ async def answer_message(message: types.Message, state: FSMContext):
 
     await state.set_state(User.start)
     ref = encode_payload(message.from_user.id)
-    await message.answer('Меню', reply_markup=kb.get_menu_btn(ref))
+    await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
 
 @router_main.message(User.wait_repost, ((F.text) | (F.caption)))
@@ -151,9 +142,9 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     await state.set_state(User.start)
     btns, check = await kb.get_sn_btn(callback.from_user.id)
     if check:
-        msg = """Мои аккаунты ✨"""
+        msg = copy.sn_msg
     else:
-        msg = """Привяжи свой аккаунт ко мне и дай знать, когда видео залетит!"""
+        msg = copy.new_sn_msg
 
     await callback.message.answer(msg, reply_markup=btns)
 
@@ -169,7 +160,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 
 @router_main.callback_query(F.data == 'disconnection')
 async def answer_message(callback: types.CallbackQuery, state: FSMContext):
-    msg = f"Уверена?"
+    msg = f"Ты уверена, что хочешь отвязать аккаунт? 廊"
     await callback.message.answer(msg, reply_markup=kb.sure_btn)
 
 
@@ -179,9 +170,9 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     await del_social_networks(callback.from_user.id, name_sn)
     btns, check = await kb.get_sn_btn(callback.from_user.id)
     if check:
-        msg = """Мои аккаунты ✨"""
+        msg = copy.sn_msg
     else:
-        msg = """Привяжи свой аккаунт ко мне и дай знать, когда видео залетит!"""
+        msg = copy.new_sn_msg
 
     await callback.message.answer(msg, reply_markup=btns)
 
@@ -215,9 +206,9 @@ async def answer_message(message: types.Message, state: FSMContext):
     btns, check = await kb.get_sn_btn(message.from_user.id)
 
     if check:
-        msg = """Мои аккаунты ✨"""
+        msg = copy.sn_msg
     else:
-        msg = """Привяжи свой аккаунт ко мне и дай знать, когда видео залетит!"""
+        msg = copy.new_sn_msg
 
     await message.answer(msg, reply_markup=btns)
 
@@ -267,7 +258,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
 
     btns, check = await kb.get_sn_btn(message.from_user.id)
 
-    msg = """Мои аккаунты ✨"""
+    msg = copy.sn_msg
 
     await message.answer(msg, reply_markup=btns)
 
@@ -277,8 +268,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
     _, points, tg_id = callback.data.split('__')
     await callback.message.edit_reply_markup()
     if points == '0':
-        msg = f"Видео не соответствует условиям"
-        await bot.send_message(tg_id, msg)
+        await bot.send_message(tg_id, copy.cancel_msg)
     else:
         msg = f"Молодец! Тебе уже зачислили баллы за этот видосик, можешь проверять 😈"
         await bot.send_message(tg_id, msg)
@@ -298,7 +288,7 @@ async def answer_message(message: types.Message):
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
     user = await get_user(message.from_user.id)
     if (message.reply_to_message.forward_origin.message_id in list_channel_message) and user and not user.send_comment:
-        await bot.send_message(message.from_user.id, "Ты оставил комментарий, получай 10 баллов")
+        await bot.send_message(message.from_user.id, copy.comment_msg)
         api.add_points(message.from_user.id, 10)
         await user_send_comment(message.from_user.id)
         await arqredis.enqueue_job(
