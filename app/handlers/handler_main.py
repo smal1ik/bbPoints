@@ -54,6 +54,13 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     ref = encode_payload(callback.from_user.id)
     await callback.message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
+# ===========================================ПОДЕЛИТЬСЯ=========================================================
+@router_main.callback_query(F.data == 'share')
+async def answer_message(callback: types.CallbackQuery, state: FSMContext):
+    ref = encode_payload(callback.from_user.id)
+    await callback.message.answer("Отправляй ссылку на бота лояльности BBCore своим друзьям и получай 20 ВВ-баллов за каждый запуск бота по твоей ссылке ✌🏻", reply_markup=kb.get_share_btn(ref))
+
+
 
 # ===========================================ЧЕК=========================================================
 # @router_main.callback_query(F.data == 'receipt')

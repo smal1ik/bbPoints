@@ -64,10 +64,33 @@ def get_menu_btn(ref: str):
     menu_btn.row(
         types.InlineKeyboardButton(
             text="Поделиться ботом",
-            url=f'https://telegram.me/share/url?url={url}&text={text}')
+            callback_data="share")
     )
+    # menu_btn.row(
+    #     types.InlineKeyboardButton(
+    #         text="Поделиться ботом",
+    #         url=f'https://telegram.me/share/url?url={url}')
+    #         # url=f'https://telegram.me/share/url?url={url}&text={text}')
+    # )
     menu_btn = menu_btn.as_markup()
     return menu_btn
+
+
+def get_share_btn(ref: str):
+    url = f"t.me/beauty_bomb_bot?start={ref}"
+    share_btn = InlineKeyboardBuilder()
+    share_btn.row(
+        types.InlineKeyboardButton(
+            text="Поделиться ботом",
+            url=f'https://telegram.me/share/url?url={url}')
+    )
+    share_btn.row(
+        types.InlineKeyboardButton(
+            text="В меню",
+            callback_data="menu")
+    )
+    share_btn = share_btn.as_markup()
+    return share_btn
 
 
 single_menu_btn = InlineKeyboardBuilder()
