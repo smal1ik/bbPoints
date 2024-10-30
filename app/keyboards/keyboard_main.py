@@ -12,7 +12,7 @@ web_app_button = types.menu_button_web_app.MenuButtonWebApp(web_app=web_app_info
 sn_link_btn = InlineKeyboardBuilder()
 sn_link_btn.row(
     types.InlineKeyboardButton(
-        text="ВИДЕО ЗАЛИТЕЛО!!!",
+        text="Моё видео залетело!",
         callback_data="flood")
 )
 sn_link_btn.row(
