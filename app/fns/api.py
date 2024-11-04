@@ -86,9 +86,14 @@ def exec_request(req, body, headers, n, slp):
     return None
 
 
-def get_items_check(sum, date, fn, fiscal_document_id, fiscal_sign):
+def get_items_check(data_check):
+    s = data_check[1].replace('.', '')
+    date = data_check[0]
+    fn = data_check[2]
+    fiscal_document_id = data_check[3]
+    fiscal_sign = data_check[4]
     token = auth()
-    check_id = send_message_request(token, sum, date, fn, fiscal_document_id, fiscal_sign)
+    check_id = send_message_request(token, s, date, fn, fiscal_document_id, fiscal_sign)
     headers['FNS-OpenApi-Token'] = token
     req = url + "ais3/KktService/0.1/1.1"
     body = f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="urn://x-artefacts-gnivc-ru/inplat/servin/OpenApiAsyncMessageConsumerService/types/1.0">

@@ -73,21 +73,29 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 @router_main.message(User.load_image_check, F.photo)
 async def answer_message(message: types.Message, state: FSMContext):
     await message.bot.download(file=message.photo[-1].file_id, destination=f'users_check/{message.from_user.id}.jpg')
-    id_check = read_qrcode(message.from_user.id)
+    id_check, data_check = read_qrcode(message.from_user.id)
     if id_check:
         res = await get_check(id_check)
         if res:
             await message.answer("Этот чек уже был загружен! Попробуй прислать другой 🙌",
                                  reply_markup=kb.single_menu_btn)
         else:
-            await add_check(id_check)
-
             # Функция, которая считает сколько баллов нужно добавить. Так же она работает с API ФНС.
-            api.get_items_check()
-            await message.answer("Отлично, ты заработала ХХ баллов")
-            await state.set_state(User.start)
-            ref = encode_payload(message.from_user.id)
-            await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
+            items = api.get_items_check(data_check)
+            if items is None:
+                await message.answer("Мнe не удалось распознать QR-код, попробуй ещё раз 🔍")
+            else:
+                n_point = check_items(items)
+                if n_point is None:
+                    await add_check(id_check)
+                    await message.answer("В этом чеке нет товаров от Beauty Bomb 😔 Попробуй прислать другой чек!")
+                else:
+                    api.add_points(n_point)
+                    await add_check(id_check)
+                    await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
+                    await state.set_state(User.start)
+                    ref = encode_payload(message.from_user.id)
+                    await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
     else:
         await message.answer("Мне не удалось распознать QR-код, попробуй ещё раз 🔍",
                              reply_markup=kb.single_menu_btn)
