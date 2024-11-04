@@ -97,9 +97,11 @@ def get_items_check(data_check):
     fiscal_sign = data_check[4]
     token = auth()
     if token is None:
+        print("token", token)
         return None
     check_id = send_message_request(token, s, date, fn, fiscal_document_id, fiscal_sign)
     if check_id is None:
+        print("check_id", check_id)
         return None
     headers['FNS-OpenApi-Token'] = token
     req = url + "ais3/KktService/0.1/1.1"
@@ -117,4 +119,5 @@ def get_items_check(data_check):
         res = exec_request(req, body, headers, n, slp)
         if res is not None:
             return res
+    print(None)
     return None
