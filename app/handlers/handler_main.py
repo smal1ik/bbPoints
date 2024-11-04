@@ -314,4 +314,5 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot, ar
             )
     except Exception as e:
         print(message)
+        print(message.reply_to_message.forward_origin)
         print(e)
