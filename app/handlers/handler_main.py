@@ -313,4 +313,5 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot, ar
                 'reset_send_comment', _defer_by=timedelta(hours=1), telegram_id=message.from_user.id
             )
     except Exception as e:
+        print(message)
         print(e)
