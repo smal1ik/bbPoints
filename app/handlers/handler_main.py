@@ -92,7 +92,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                     await message.answer("В этом чеке нет товаров от Beauty Bomb 😔 Попробуй прислать другой чек!",
                                          reply_markup=kb.single_menu_btn)
                 else:
-                    api.add_points(n_point)
+                    api.add_points(message.from_user.id, n_point)
                     await add_check(id_check)
                     await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
                     await state.set_state(User.start)
