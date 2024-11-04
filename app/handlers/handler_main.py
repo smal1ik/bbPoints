@@ -74,7 +74,6 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 async def answer_message(message: types.Message, state: FSMContext):
     await message.bot.download(file=message.photo[-1].file_id, destination=f'users_check/{message.from_user.id}.jpg')
     id_check, data_check = read_qrcode(message.from_user.id)
-    print(id_check, data_check)
     if id_check:
         res = await get_check(id_check)
         if res:
