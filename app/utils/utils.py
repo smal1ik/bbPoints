@@ -59,16 +59,15 @@ def check_items(items):
                 break
 
     if res_sum >= 500000:
-        return 3000
-    if res_sum >= 300000:
         return 1500
+    if res_sum >= 300000:
+        return 800
     if res_sum >= 150000:
-        return 500
+        return 400
     if res_sum >= 80000:
-        return 300
+        return 250
     if res_sum >= 50000:
-        return 200
+        return 150
     if res_sum >= 30000:
-        return 100
-
+        return 50
     return None

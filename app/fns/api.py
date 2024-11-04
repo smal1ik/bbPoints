@@ -77,12 +77,15 @@ def get_items_from_result(result):
 
 def exec_request(req, body, headers, n, slp):
     for _ in range(n):
-        r = requests.post(req, data=body, headers=headers)
-        result = xmltodict.parse(r.text)
-        status = result['soap:Envelope']['soap:Body']['GetMessageResponse']['ProcessingStatus']
-        if status == 'COMPLETED':
-            return get_items_from_result(result)
-        time.sleep(slp)
+        try:
+            r = requests.post(req, data=body, headers=headers)
+            result = xmltodict.parse(r.text)
+            status = result['soap:Envelope']['soap:Body']['GetMessageResponse']['ProcessingStatus']
+            if status == 'COMPLETED':
+                return get_items_from_result(result)
+            time.sleep(slp)
+        except:
+            return None
     return None
 
 
@@ -93,7 +96,11 @@ def get_items_check(data_check):
     fiscal_document_id = data_check[3]
     fiscal_sign = data_check[4]
     token = auth()
+    if token is None:
+        return None
     check_id = send_message_request(token, s, date, fn, fiscal_document_id, fiscal_sign)
+    if check_id is None:
+        return None
     headers['FNS-OpenApi-Token'] = token
     req = url + "ais3/KktService/0.1/1.1"
     body = f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="urn://x-artefacts-gnivc-ru/inplat/servin/OpenApiAsyncMessageConsumerService/types/1.0">
