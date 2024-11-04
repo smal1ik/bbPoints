@@ -7,7 +7,7 @@ from aiogram.utils.deep_linking import create_start_link, decode_payload, encode
 from arq import ArqRedis
 
 from app.database.requests import *
-from app.fns import api
+from app.fns import fns_api
 from app.utils import copy
 from app.utils.state import User
 from app.utils.utils import *
@@ -81,7 +81,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                                  reply_markup=kb.single_menu_btn)
         else:
             # Функция, которая считает сколько баллов нужно добавить. Так же она работает с API ФНС.
-            items = api.get_items_check(data_check)
+            items = fns_api.get_items_check(data_check)
             if items is None:
                 await message.answer("Мнe не удалось распознать QR-код, попробуй ещё раз 🔍",
                                      reply_markup=kb.single_menu_btn)
