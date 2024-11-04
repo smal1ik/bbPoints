@@ -305,8 +305,7 @@ async def answer_message(message: types.Message):
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
     try:
         user = await get_user(message.from_user.id)
-        if (
-                message.reply_to_message.forward_origin.message_id in list_channel_message) and user and not user.send_comment:
+        if (message.reply_to_message.forward_origin.message_id in list_channel_message) and user and not user.send_comment:
             await bot.send_message(message.from_user.id, copy.comment_msg)
             api.add_points(message.from_user.id, 10)
             await user_send_comment(message.from_user.id)
