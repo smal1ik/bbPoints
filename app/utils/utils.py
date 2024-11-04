@@ -15,16 +15,17 @@ def read_qrcode(tg_id):
         decoded_text = qreader.detect_and_decode(image=image)
         if decoded_text and decoded_text[-1]:
             decoded_text = decoded_text[-1].replace('&', '=').split('=')
-            os.remove(f'users_check/{tg_id}.jpg')
             id_check = f'{decoded_text[1]}{decoded_text[7]}{decoded_text[9]}'
             data_check = decoded_text[1::2]
             date = data_check[0]
             data_check[0] = f"{date[0:4]}-{date[4:6]}-{date[6:8]}T{date[9:11]}:{date[11:13]}:00"
             return id_check, data_check
+        return None, None
     except Exception as e:
         print(e)
         return None, None
-    return None, None
+    finally:
+        os.remove(f'users_check/{tg_id}.jpg')
 
 
 synonym_bb = ['t.me/beautybombrussia', 't.me/beautybomb', '@beautybomb', '@beautybombrussia']
