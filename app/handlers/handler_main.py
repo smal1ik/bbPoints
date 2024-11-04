@@ -304,11 +304,12 @@ async def answer_message(message: types.Message):
 @router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False)  # ID ЧАТА
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
     user = await get_user(message.from_user.id)
-    message_id = message.reply_to_message.forward_origin.message_id
-    if message_id and (message_id in list_channel_message) and user and not user.send_comment:
-        await bot.send_message(message.from_user.id, copy.comment_msg)
-        api.add_points(message.from_user.id, 10)
-        await user_send_comment(message.from_user.id)
-        await arqredis.enqueue_job(
-            'reset_send_comment', _defer_by=timedelta(hours=1), telegram_id=message.from_user.id
-        )
+    if message:
+        message_id = message.reply_to_message.forward_origin.message_id
+        if (message_id in list_channel_message) and user and not user.send_comment:
+            await bot.send_message(message.from_user.id, copy.comment_msg)
+            api.add_points(message.from_user.id, 10)
+            await user_send_comment(message.from_user.id)
+            await arqredis.enqueue_job(
+                'reset_send_comment', _defer_by=timedelta(hours=1), telegram_id=message.from_user.id
+            )
