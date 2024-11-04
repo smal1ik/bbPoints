@@ -80,6 +80,7 @@ def exec_request(req, body, headers, n, slp):
         try:
             r = requests.post(req, data=body, headers=headers)
             result = xmltodict.parse(r.text)
+            print(result)
             status = result['soap:Envelope']['soap:Body']['GetMessageResponse']['ProcessingStatus']
             if status == 'COMPLETED':
                 return get_items_from_result(result)
