@@ -1,6 +1,5 @@
 from datetime import timedelta
 
-from aiogram import Router
 from aiogram.filters.command import Command
 from aiogram import types, F, Router, Bot
 from aiogram.fsm.context import FSMContext
@@ -8,6 +7,7 @@ from aiogram.utils.deep_linking import create_start_link, decode_payload, encode
 from arq import ArqRedis
 
 from app.database.requests import *
+from app.fns import api
 from app.utils import copy
 from app.utils.state import User
 from app.utils.utils import *
@@ -63,34 +63,34 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 
 
 # ===========================================ЧЕК=========================================================
-# @router_main.callback_query(F.data == 'receipt')
-# async def answer_message(callback: types.CallbackQuery, state: FSMContext):
-#     await state.set_state(User.load_image_check)
-#     await callback.message.answer("Загрузи чёткую фотографию чека чтобы было видно куар-код",
-#                                   reply_markup=kb.single_menu_btn)
+@router_main.callback_query(F.data == 'receipt')
+async def answer_message(callback: types.CallbackQuery, state: FSMContext):
+    await state.set_state(User.load_image_check)
+    await callback.message.answer(copy.check_start_msg,
+                                  reply_markup=kb.single_menu_btn)
 
 
-# @router_main.message(User.load_image_check, F.photo)
-# async def answer_message(message: types.Message, state: FSMContext):
-#     await message.bot.download(file=message.photo[-1].file_id, destination=f'users_check/{message.from_user.id}.jpg')
-#     id_check = read_qrcode(message.from_user.id)
-#     if id_check:
-#         res = await get_check(id_check)
-#         if res:
-#             await message.answer("Чек уже загружали до этого\nПопробуй другой чек",
-#                                  reply_markup=kb.single_menu_btn)
-#         else:
-#             await add_check(id_check)
-#
-#             # Функция, которая считает сколько баллов нужно добавить. Так же она работает с API ФНС.
-#
-#             await message.answer("Отлично, ты заработала ХХ баллов")
-#             await state.set_state(User.start)
-#             ref = encode_payload(message.from_user.id)
-#             await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
-#     else:
-#         await message.answer("Не удалось распознать куар-код\nПопробуй ещё раз",
-#                              reply_markup=kb.single_menu_btn)
+@router_main.message(User.load_image_check, F.photo)
+async def answer_message(message: types.Message, state: FSMContext):
+    await message.bot.download(file=message.photo[-1].file_id, destination=f'users_check/{message.from_user.id}.jpg')
+    id_check = read_qrcode(message.from_user.id)
+    if id_check:
+        res = await get_check(id_check)
+        if res:
+            await message.answer("Этот чек уже был загружен! Попробуй прислать другой 🙌",
+                                 reply_markup=kb.single_menu_btn)
+        else:
+            await add_check(id_check)
+
+            # Функция, которая считает сколько баллов нужно добавить. Так же она работает с API ФНС.
+            api.get_items_check()
+            await message.answer("Отлично, ты заработала ХХ баллов")
+            await state.set_state(User.start)
+            ref = encode_payload(message.from_user.id)
+            await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
+    else:
+        await message.answer("Мне не удалось распознать QR-код, попробуй ещё раз 🔍",
+                             reply_markup=kb.single_menu_btn)
 
 
 # ================================Проверить упоминание в посте===================================================

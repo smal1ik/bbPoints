@@ -1,24 +1,27 @@
 import os
-# from qreader import QReader
-# import cv2
+from qreader import QReader
+import cv2
 
 with open('app/utils/posts_id.txt') as file:
     list_channel_message = [int(elem) for elem in file.readline().split()]
 print(list_channel_message)
 
-# qreader = QReader()
+qreader = QReader()
 
-# def read_qrcode(tg_id):
-#     try:
-#         image = cv2.cvtColor(cv2.imread(f'users_check/{tg_id}.jpg'), cv2.COLOR_BGR2RGB)
-#         decoded_text = qreader.detect_and_decode(image=image)
-#         if decoded_text and decoded_text[-1]:
-#             decoded_text = decoded_text[-1].replace('&', '=').split('=')
-#             os.remove(f'users_check/{tg_id}.jpg')
-#             return f'{decoded_text[1]}{decoded_text[7]}{decoded_text[9]}'
-#     except:
-#         return None
-#     return None
+
+def read_qrcode(tg_id):
+    try:
+        image = cv2.cvtColor(cv2.imread(f'users_check/{tg_id}.jpg'), cv2.COLOR_BGR2RGB)
+        decoded_text = qreader.detect_and_decode(image=image)
+        print(decoded_text)
+        if decoded_text and decoded_text[-1]:
+            decoded_text = decoded_text[-1].replace('&', '=').split('=')
+            os.remove(f'users_check/{tg_id}.jpg')
+            return f'{decoded_text[1]}{decoded_text[7]}{decoded_text[9]}'
+    except:
+        return None
+    return None
+
 
 synonym_bb = ['t.me/beautybombrussia', 't.me/beautybomb', '@beautybomb', '@beautybombrussia']
 
