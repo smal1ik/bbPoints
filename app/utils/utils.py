@@ -19,7 +19,8 @@ def read_qrcode(tg_id):
             id_check = f'{decoded_text[1]}{decoded_text[7]}{decoded_text[9]}'
             data_check = decoded_text[1::2]
             return id_check, data_check
-    except:
+    except Exception as e:
+        print(e)
         return None, None
     return None, None
 
