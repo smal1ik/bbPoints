@@ -18,6 +18,8 @@ def read_qrcode(tg_id):
             os.remove(f'users_check/{tg_id}.jpg')
             id_check = f'{decoded_text[1]}{decoded_text[7]}{decoded_text[9]}'
             data_check = decoded_text[1::2]
+            date = data_check[0]
+            data_check[0] = f"{date[0:4]}-{date[4:6]}-{date[6:8]}T{date[9:11]}:{date[11:13]}:00"
             return id_check, data_check
     except Exception as e:
         print(e)
