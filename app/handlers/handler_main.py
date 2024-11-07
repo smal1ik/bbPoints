@@ -268,7 +268,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
 {link_video}   
         """
 
-        await bot.send_message(-4585659208,
+        await bot.send_message(-1002475070676,
                                msg,
                                reply_markup=kb.get_points_btn(message.from_user.id),
                                disable_web_page_preview=True)
