@@ -23,6 +23,13 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
     await message.answer("Скинь ссылку, которую необходимо заблокировкать\nДля выхода напиши /end")
     await state.set_state(User.admin)
 
+
+@router_main.message(Command('end'))
+async def message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
+    await message.answer(copy.start_msg)
+    await state.set_state(User.start)
+
+
 @router_main.message(User.admin)
 async def answer_message(message: types.Message, state: FSMContext):
     link = message.text.replace('https://', '')
@@ -33,11 +40,6 @@ async def answer_message(message: types.Message, state: FSMContext):
         await message.answer("Что то пошло не так, напиши админу")
         await state.set_state(User.start)
         await message.answer(copy.start_msg)
-
-@router_main.message(Command('end'))
-async def message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
-    await message.answer(copy.start_msg)
-    await state.set_state(User.start)
 
 @router_main.message(Command('test'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
