@@ -177,7 +177,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 
 @router_main.callback_query(F.data == 'disconnection')
 async def answer_message(callback: types.CallbackQuery, state: FSMContext):
-    msg = f"Ты уверена, что хочешь отвязать аккаунт? 廊"
+    msg = f"Ты уверена, что хочешь отвязать аккаунт? 🤔"
     await callback.message.answer(msg, reply_markup=kb.sure_btn)
 
 
@@ -217,7 +217,7 @@ async def answer_message(message: types.Message, state: FSMContext):
         await message.answer(msg)
     else:
         await add_social_network(message.from_user.id, sn, link)
-        msg = f"Супер! Ты успешно привязала свой аккаунт ко мне 甆"
+        msg = f"Супер! Ты успешно привязала свой аккаунт ко мне 🩷"
         await message.answer(msg)
 
     btns, check = await kb.get_sn_btn(message.from_user.id)
@@ -253,7 +253,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
         await message.answer(msg)
     else:
         await add_link_video(message.from_user.id, link_video)
-        msg = f"Твоё видео проходит проверку, нужно немного подождать 羅"
+        msg = f"Твоё видео проходит проверку, нужно немного подождать ⌛️"
         await message.answer(msg)
 
         msg = f"""

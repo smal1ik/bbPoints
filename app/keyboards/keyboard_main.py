@@ -58,7 +58,7 @@ def get_menu_btn(ref: str):
     )
     menu_btn.row(
         types.InlineKeyboardButton(
-            text="Конкурс",
+            text="Конкурс #BBCore",
             callback_data="contest")
     )
     menu_btn.row(
