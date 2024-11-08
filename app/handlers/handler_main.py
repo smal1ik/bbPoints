@@ -20,8 +20,8 @@ router_main = Router()
 
 @router_main.message(Command('filter_account'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
-    message.answer("Скинь ссылку, которую необходимо заблокировкать\nДля выхода напиши /end")
-    state.set_state(User.admin)
+    await message.answer("Скинь ссылку, которую необходимо заблокировкать\nДля выхода напиши /end")
+    await state.set_state(User.admin)
 
 @router_main.message(User.admin)
 async def answer_message(message: types.Message, state: FSMContext):
