@@ -23,10 +23,10 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
     await message.answer("Скинь ссылку, которую необходимо заблокировкать\nДля выхода напиши /end")
     await state.set_state(User.admin)
 
-
 @router_main.message(Command('end'))
 async def message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
-    await message.answer(copy.start_msg)
+    ref = encode_payload(message.from_user.id)
+    await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
     await state.set_state(User.start)
 
 
@@ -39,7 +39,8 @@ async def answer_message(message: types.Message, state: FSMContext):
     except:
         await message.answer("Что то пошло не так, напиши админу")
         await state.set_state(User.start)
-        await message.answer(copy.start_msg)
+        ref = encode_payload(message.from_user.id)
+        await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
 @router_main.message(Command('test'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
