@@ -34,7 +34,7 @@ async def answer_message(message: types.Message, state: FSMContext):
         await state.set_state(User.start)
         await message.answer(copy.start_msg)
 
-@router_main.message(Command('test'))
+@router_main.message(Command('end'))
 async def message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
     await message.answer(copy.start_msg)
     await state.set_state(User.start)
