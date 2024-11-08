@@ -18,8 +18,23 @@ ID_CHANNEL = int(config('ID_CHANNEL'))
 ID_CHAT = int(config('ID_CHAT'))
 router_main = Router()
 
+@router_main.message(Command('filter_account'))
+async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
+    message.answer("Скинь ссылку, которую необходимо заблокировкать\nДля выхода напиши \\end")
+    state.set_state(User.admin)
 
-@router_main.message(Command('test'))
+@router_main.message(User.admin)
+async def answer_message(message: types.Message, state: FSMContext):
+    link = message.text.replace('https://', '')
+    try:
+        await add_social_network(message.from_user.id, "Bloger", link)
+        await message.answer("Ссылка добавлена, можешь продолжать скидывать\nДля выхода напиши \\end")
+    except:
+        await message.answer("Что то пошло не так, напиши админу")
+        await state.set_state(User.start)
+        await message.answer(copy.start_msg)
+
+@router_main.message(Command('test') | Command('end'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
     if message.from_user.id == message.chat.id:
         await state.set_state(User.start)

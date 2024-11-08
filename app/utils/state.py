@@ -7,4 +7,5 @@ class User(StatesGroup):
     wait_repost = State()
     wait_link = State()
     wait_link_video = State()
+    admin = State()
     end = State()
