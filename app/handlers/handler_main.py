@@ -130,12 +130,10 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 
 @router_main.message(User.load_image_check, F.photo)
 async def answer_message(message: types.Message, state: FSMContext):
-    print((await state.get_data())['count_check'])
-    count_check = (await state.get_data())['count_check'] + 1
-    await state.set_data({'count_check': count_check})
-
     await message.bot.download(file=message.photo[-1].file_id, destination=f'users_check/{message.from_user.id}.jpg')
     id_check, data_check = read_qrcode(message.from_user.id)
+    count_check = (await state.get_data())['count_check'] + 1
+    print(data_check)
     if id_check:
         res = await get_check(id_check)
         if res:
@@ -165,11 +163,13 @@ async def answer_message(message: types.Message, state: FSMContext):
     else:
         await message.answer("Мне не удалось распознать QR-код, попробуй ещё раз 🔍",
                              reply_markup=kb.single_menu_btn)
+        await state.set_data({'count_check': count_check})
+
 
     if count_check == 1:
         await message.answer("Скинь дату")
         await state.set_state(User.check_date)
-
+        await state.set_data({'count_check': 0})
 
 @router_main.message(User.check_date, F.text)
 async def answer_message(message: types.Message, state: FSMContext):
@@ -244,7 +244,6 @@ async def answer_message(message: types.Message, state: FSMContext):
                 await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
     await state.set_state(User.start)
     ref = encode_payload(message.from_user.id)
-    await state.set_data({'count_check': 0})
     await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
 # ================================Проверить упоминание в посте===================================================
