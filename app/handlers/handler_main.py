@@ -125,7 +125,7 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
         await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
 
-@router_main.message(F.data == 'start')
+@router_main.message(F.data == 'new_start')
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot):
     if message.from_user.id == message.chat.id:
         await state.set_state(User.start)
