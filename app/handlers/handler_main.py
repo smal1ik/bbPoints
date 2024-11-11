@@ -309,6 +309,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
         await bot.send_message(tg_id, copy.cancel_msg)
     else:
         msg = f"Молодец! Тебе уже зачислили баллы за этот видосик, можешь проверять 😈"
+        await update_number_accept_video(sn)
         await bot.send_message(tg_id, msg)
         api.add_points(int(tg_id), int(points))
 
