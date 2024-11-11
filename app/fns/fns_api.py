@@ -96,6 +96,7 @@ def get_items_check(data_check):
     fiscal_document_id = data_check[3]
     fiscal_sign = data_check[4]
     token = auth()
+    print(date, fn, fiscal_document_id, fiscal_sign)
     if token is None:
         print("token", token)
         return None

@@ -226,6 +226,7 @@ async def answer_message(message: types.Message, state: FSMContext):
         await message.answer("Этот чек уже был загружен! Попробуй прислать другой 🙌",
                              reply_markup=kb.single_menu_btn)
     else:
+        print(data_check)
         items, retail_place = fns_api.get_items_check(data_check)
         if items is None:
             await message.answer("Ошибка с сервером, попробуй позже",
