@@ -126,8 +126,8 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 
 
 @router_main.callback_query(F.data == 'new_start')
-async def cmd_message(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
-    if callback.from_user.id == callback.chat.id:
+async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
+    if callback.from_user.id == callback.message.chat.id:
         await state.set_state(User.start)
         ref = 0
 
