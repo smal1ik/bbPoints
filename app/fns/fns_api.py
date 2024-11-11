@@ -70,7 +70,7 @@ def get_items_from_result(result):
     result = json.loads(result)
     items = result['content']['items']
     res_items = []
-    print(result['retailPlace'])
+    print(result)
     for item in items:
         res_items.append({'name': item['name'], 'price': item['price']})
     return res_items
