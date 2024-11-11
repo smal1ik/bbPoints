@@ -78,7 +78,6 @@ async def answer_message(message: types.Message, state: FSMContext):
 
 @router_main.message(Command('test'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
-    await state.set_data({'count_check': 0})
     if message.from_user.id == message.chat.id:
         await state.set_state(User.start)
         args = command.args
