@@ -130,6 +130,7 @@ async def answer_message(message: types.Message, state: FSMContext):
     print(id_check, data_check)
     if id_check:
         res = await get_check(id_check)
+        res = False
         if res:
             await message.answer("Этот чек уже был загружен! Попробуй прислать другой 🙌",
                                  reply_markup=kb.single_menu_btn)
