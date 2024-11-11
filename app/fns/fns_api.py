@@ -70,6 +70,7 @@ def get_items_from_result(result):
     result = json.loads(result)
     items = result['content']['items']
     res_items = []
+    print(result['retailPlace'])
     for item in items:
         res_items.append({'name': item['name'], 'price': item['price']})
     return res_items
@@ -80,7 +81,6 @@ def exec_request(req, body, headers, n, slp):
         try:
             r = requests.post(req, data=body, headers=headers)
             result = xmltodict.parse(r.text)
-            print(result)
             status = result['soap:Envelope']['soap:Body']['GetMessageResponse']['ProcessingStatus']
             if status == 'COMPLETED':
                 return get_items_from_result(result)
