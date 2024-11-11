@@ -155,14 +155,6 @@ async def answer_message(message: types.Message, state: FSMContext):
     else:
         count_post = channel.number_post
     post = await get_post(id_channel, id_post)
-    # if id_post <= 30:
-    #     await message.answer("Маленькая группа, меньше 30 постов")
-    # elif bb_post_check(text):
-    #     await message.answer("В посте нет упоминания")
-    # elif count_post >= 3:
-    #     await message.answer("За неделю уже было принято 3 поста")
-    # elif post:
-    #     await message.answer("Данный пост уже был принят")
     if id_post <= 30 or bb_post_check(text) or count_post >= 3 or post:
         await message.answer(copy.error_post_msg)
     else:

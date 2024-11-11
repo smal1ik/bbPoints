@@ -167,6 +167,13 @@ async def get_analytics():
         results.append((await session.execute(func.count(User.id))).scalar())
         results.append((await session.execute(select(func.count()).where(User.user_refs != 0))).scalar())
         results.append((await session.execute(func.sum(User.count_comment))).scalar())
+        results.append((await session.execute(func.count(Post.id))).scalar())
+        # 5. Всего постов скинуто добавить <-
+        results.append((
+            await session.execute(
+                select(SocialNetwork.social_network, func.count(SocialNetwork.id)).group_by(SocialNetwork.social_network)
+            )).fetchall())
+        # 7. Сколько видео залетело по каждой соц сети (именно засчитали)
 
         # results.append(str(round((await session.execute(func.avg(User.count_generation))).scalar(), 2)))
         # results.append((await session.execute(func.sum(User.count_answers))).scalar())
@@ -174,3 +181,10 @@ async def get_analytics():
         # results.append((await session.execute(select(func.count()).where(User.count_answers >= 1))).scalar())
         # results.append((await session.execute(select(User.user_from, func.count(User.user_from)).group_by(User.user_from))).fetchall())
     return results
+
+
+# На будущее по чекам
+# Сколько чеков загружено всего
+# Сколько чеков по магазинам
+# На какую общую сумму товаров бб было во всех чеках
+# Сколько баллов в общем засчитали за чеки
