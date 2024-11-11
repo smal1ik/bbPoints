@@ -26,7 +26,6 @@ router_main = Router()
 @router_main.message(Command('statistics'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
     stats = await get_analytics()
-    print(stats)
     msg = f"""Всего пользователей: {stats[0]}
 Пришедших по рефералке: {stats[1]}
 Засчитано комментариев: {stats[2]}
@@ -79,6 +78,7 @@ async def answer_message(message: types.Message, state: FSMContext):
 
 @router_main.message(Command('test'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
+    await state.set_data({'count_check': 0})
     if message.from_user.id == message.chat.id:
         await state.set_state(User.start)
         args = command.args
@@ -130,6 +130,10 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 
 @router_main.message(User.load_image_check, F.photo)
 async def answer_message(message: types.Message, state: FSMContext):
+    print((await state.get_data())['count_check'])
+    count_check = (await state.get_data())['count_check'] + 1
+    await state.set_data({'count_check': count_check})
+
     await message.bot.download(file=message.photo[-1].file_id, destination=f'users_check/{message.from_user.id}.jpg')
     id_check, data_check = read_qrcode(message.from_user.id)
     if id_check:
@@ -157,10 +161,90 @@ async def answer_message(message: types.Message, state: FSMContext):
                     await state.set_state(User.start)
                     ref = encode_payload(message.from_user.id)
                     await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
+                    await state.set_data({'count_check': 0})
     else:
         await message.answer("Мне не удалось распознать QR-код, попробуй ещё раз 🔍",
                              reply_markup=kb.single_menu_btn)
 
+    if count_check == 1:
+        await message.answer("Скинь дату")
+        await state.set_state(User.check_date)
+
+
+@router_main.message(User.check_date, F.text)
+async def answer_message(message: types.Message, state: FSMContext):
+    date_text = message.text.split()
+    if len(date_text) != 2 or len(date_text[1].split(':')) != 2:
+        await message.answer("Неверный формат")
+    else:
+        day, month, year = date_text[0].split('.')
+        date = f"20{year}-{month}-{year}T{date_text[1]}:00"
+        await state.set_data({"data_check": [date]})
+        await message.answer("Скинь сумму чека")
+        await state.set_state(User.check_summ)
+
+
+@router_main.message(User.check_summ, F.text)
+async def answer_message(message: types.Message, state: FSMContext):
+    sum_text = message.text
+    if not '.' in sum_text:
+        sum_text += ".00"
+    data_check = (await state.get_data())['data_check']
+    data_check.append(sum_text)
+    await state.set_data({'data_check': data_check})
+    await message.answer("Скинь ФН")
+    await state.set_state(User.check_fn)
+
+@router_main.message(User.check_fn, F.text)
+async def answer_message(message: types.Message, state: FSMContext):
+    fn = message.text
+    data_check = (await state.get_data())['data_check']
+    data_check.append(fn)
+    await state.set_data({'data_check': data_check})
+    await message.answer("Скинь ФД")
+    await state.set_state(User.check_fd)
+
+@router_main.message(User.check_fd, F.text)
+async def answer_message(message: types.Message, state: FSMContext):
+    fd = message.text
+    data_check = (await state.get_data())['data_check']
+    data_check.append(fd)
+    await state.set_data({'data_check': data_check})
+    await message.answer("Скинь ФП")
+    await state.set_state(User.check_fs)
+
+@router_main.message(User.check_fs, F.text)
+async def answer_message(message: types.Message, state: FSMContext):
+    await state.set_data({'count_check': 0})
+    fs = message.text
+    data_check = (await state.get_data())['data_check']
+    data_check.append(fs)
+    data_check.append('1')
+    id_check = data_check[0].replace('-', '').replace(':', '')[:-2] + data_check[3] + data_check[4]
+    print(id_check)
+    res = await get_check(id_check)
+    if res:
+        await message.answer("Этот чек уже был загружен! Попробуй прислать другой 🙌",
+                             reply_markup=kb.single_menu_btn)
+    else:
+        items, retail_place = fns_api.get_items_check(data_check)
+        if items is None:
+            await message.answer("Ошибка с сервером, попробуй позже",
+                                 reply_markup=kb.single_menu_btn)
+        else:
+            n_point, sum_bb = check_items(items)
+            if n_point is None:
+                await add_check(id_check)
+                await message.answer("В этом чеке нет товаров от Beauty Bomb 😔 Попробуй прислать другой чек!",
+                                     reply_markup=kb.single_menu_btn)
+            else:
+                api.add_points(message.from_user.id, n_point)
+                retail_name = get_name_retail(retail_place.lower())
+                await add_check(id_check, retail_name, sum_bb, n_point)
+                await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
+    await state.set_state(User.start)
+    ref = encode_payload(message.from_user.id)
+    await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
 # ================================Проверить упоминание в посте===================================================
 @router_main.callback_query(F.data == 'mention')
