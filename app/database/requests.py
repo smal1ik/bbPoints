@@ -118,6 +118,14 @@ async def get_post(channel_id: BigInteger, post_id: BigInteger):
         result = await session.scalar(select(Post).where(Post.channel_id == channel_id, Post.post_id == post_id))
     return result
 
+async def add_count_channel_post(channel_id: BigInteger):
+    async with async_session() as session:
+        result = await session.scalar(select(Channel).where(Channel.channel_id == channel_id))
+        await session.execute(update(Channel).where(Channel.channel_id == channel_id).values(
+            count_post=result.count_post + 1)
+        )
+        await session.commit()
+
 
 async def add_social_network(tg_id: BigInteger, social_network: str, social_network_link: str):
     async with async_session() as session:
@@ -168,18 +176,12 @@ async def get_analytics():
         results.append((await session.execute(select(func.count()).where(User.user_refs != 0))).scalar())
         results.append((await session.execute(func.sum(User.count_comment))).scalar())
         results.append((await session.execute(func.count(Post.id))).scalar())
-        # 5. Всего постов скинуто добавить <-
+        results.append((await session.execute(func.sum(Channel.count_post))).scalar())
         results.append((
             await session.execute(
                 select(SocialNetwork.social_network, func.count(SocialNetwork.id)).group_by(SocialNetwork.social_network)
             )).fetchall())
         # 7. Сколько видео залетело по каждой соц сети (именно засчитали)
-
-        # results.append(str(round((await session.execute(func.avg(User.count_generation))).scalar(), 2)))
-        # results.append((await session.execute(func.sum(User.count_answers))).scalar())
-        # results.append((await session.execute(select(func.count()).where(User.count_answers == 0))).scalar())
-        # results.append((await session.execute(select(func.count()).where(User.count_answers >= 1))).scalar())
-        # results.append((await session.execute(select(User.user_from, func.count(User.user_from)).group_by(User.user_from))).fetchall())
     return results
 
 

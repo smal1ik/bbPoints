@@ -163,6 +163,7 @@ async def answer_message(message: types.Message, state: FSMContext):
         await add_number_post_channel(id_channel)
         api.add_points(message.from_user.id, 40)
 
+    await add_count_channel_post(id_channel)
     await state.set_state(User.start)
     ref = encode_payload(message.from_user.id)
     await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))

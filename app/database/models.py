@@ -41,6 +41,7 @@ class Channel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     channel_id = mapped_column(BigInteger)
     number_post: Mapped[int] = mapped_column(default=0)
+    count_post: Mapped[int] = mapped_column(default=0, nullable=True)
 
 
 class Post(Base):
