@@ -21,7 +21,21 @@ router_main = Router()
 @router_main.message(Command('statistics'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
     stats = await get_analytics()
-    await message.answer(str(stats))
+    msg = f"""Всего пользователей: {stats[0]}
+Пришедших по рефералке: {stats[1]}
+Засчитано комментариев: {stats[2]}
+Засчитано постов: {stats[3]}
+Всего постов скинуто: {stats[4]}
+Сколько аккаунтов каждого вида привязали
+{stats[5][0][0]}: {stats[5][0][1]}
+{stats[5][1][0]}: {stats[5][1][1]}
+{stats[5][2][0]}: {stats[5][2][1]}
+Сколько видео залетело по каждой соц сети
+{stats[6][0][0]}: {stats[6][0][1]}
+{stats[6][1][0]}: {stats[6][1][1]}
+{stats[6][2][0]}: {stats[6][2][1]}
+"""
+    await message.answer(msg)
 
 @router_main.message(Command('filter_account'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
