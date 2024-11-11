@@ -171,6 +171,6 @@ async def get_analytics():
         # results.append(str(round((await session.execute(func.avg(User.count_generation))).scalar(), 2)))
         # results.append((await session.execute(func.sum(User.count_answers))).scalar())
         # results.append((await session.execute(select(func.count()).where(User.count_answers == 0))).scalar())
-        results.append((await session.execute(select(func.count()).where(User.count_answers >= 1))).scalar())
+        # results.append((await session.execute(select(func.count()).where(User.count_answers >= 1))).scalar())
         # results.append((await session.execute(select(User.user_from, func.count(User.user_from)).group_by(User.user_from))).fetchall())
     return results
