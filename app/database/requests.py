@@ -173,7 +173,7 @@ async def update_number_accept_video(social_network: str):
     async with async_session() as session:
         result = await session.scalar(select(NumberAcceptVideo).where(NumberAcceptVideo.social_network == social_network))
         await session.execute(update(NumberAcceptVideo).where(NumberAcceptVideo.id == social_network).values(
-            number_point=result.number + 1)
+            number=result.number + 1)
         )
         await session.commit()
 
