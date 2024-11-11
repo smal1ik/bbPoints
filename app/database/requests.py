@@ -63,12 +63,12 @@ async def get_user(tg_id: BigInteger):
         return result
 
 
-async def add_check(check_id: str):
+async def add_check(check_id: str, retail_name=None, sum_bb=None, n_point=None):
     """
     Функция добавляет чек в БД
     """
     async with async_session() as session:
-        session.add(Check(check_id=check_id))
+        session.add(Check(check_id=check_id, name_shop=retail_name, price_bb=sum_bb, points=n_point))
         await session.commit()
 
 
