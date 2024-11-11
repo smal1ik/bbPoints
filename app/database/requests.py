@@ -164,9 +164,8 @@ async def search_link_video(link_video):
 async def get_analytics():
     results = []
     async with async_session() as session:
-        results.append((await session.execute(func.count(User.id))).scalar())
-        rows = select(User.id).where(User.user_refs != 0)
-        results.append((await session.execute(func.count(rows)).scalar()))
+        results.append((await session.execute(func.count())).scalar())
+        results.append((await session.execute(func.count()).where(User.user_refs != 0).scalar()))
         results.append((await session.execute(func.sum(User.count_comment))).scalar())
         # results.append(str(round((await session.execute(func.avg(User.count_generation))).scalar(), 2)))
         # results.append((await session.execute(func.sum(User.count_answers))).scalar())
