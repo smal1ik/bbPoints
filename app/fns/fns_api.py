@@ -82,7 +82,6 @@ def exec_request(req, body, headers, n, slp):
             result = xmltodict.parse(r.text)
             status = result['soap:Envelope']['soap:Body']['GetMessageResponse']['ProcessingStatus']
             if status == 'COMPLETED':
-                print(result)
                 return get_items_from_result(result)
             time.sleep(slp)
         except Exception as e:
@@ -98,7 +97,6 @@ def get_items_check(data_check):
     fiscal_document_id = data_check[3]
     fiscal_sign = data_check[4]
     token = auth()
-    print(date, fn, fiscal_document_id, fiscal_sign)
     if token is None:
         print("token", token)
         return None, None

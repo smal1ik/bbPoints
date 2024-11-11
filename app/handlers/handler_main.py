@@ -3,6 +3,7 @@ from datetime import timedelta
 from aiogram.filters.command import Command
 from aiogram import types, F, Router, Bot
 from aiogram.fsm.context import FSMContext
+from aiogram.types import InputFile, FSInputFile
 from aiogram.utils.deep_linking import create_start_link, decode_payload, encode_payload
 from arq import ArqRedis
 
@@ -132,9 +133,10 @@ async def answer_message(message: types.Message, state: FSMContext):
     count_check = (await state.get_data())
     if not count_check.get('count_check'):
         count_check = 0
+    else:
+        count_check = count_check.get('count_check')
     await message.bot.download(file=message.photo[-1].file_id, destination=f'users_check/{message.from_user.id}.jpg')
     id_check, data_check = read_qrcode(message.from_user.id)
-    print(data_check)
     if id_check:
         res = await get_check(id_check)
         if res:
@@ -162,16 +164,20 @@ async def answer_message(message: types.Message, state: FSMContext):
                     await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
                     await state.set_data({'count_check': 0})
     else:
-        await message.answer("Мне не удалось распознать QR-код, попробуй ещё раз 🔍",
-                             reply_markup=kb.single_menu_btn)
         count_check += 1
         await state.set_data({'count_check': count_check})
 
+        if count_check >= 3:
+            await message.answer("Упс! Кажется, я не могу распознать информацию на твоём чеке 🥲\n\nНапиши, пожалуйста, сообщение со всеми данными из чека по инструкции далее❤️")
+            await message.answer_photo(FSInputFile("users_check/check_example.png"))
 
-    if count_check == 1:
-        await message.answer("Скинь дату")
-        await state.set_state(User.check_date)
-        await state.set_data({'count_check': 0})
+            await message.answer("Укажи точную дату покупки и время покупки (дд.мм.гг чч:мм) 🕰")
+
+            await state.set_state(User.check_date)
+            await state.set_data({'count_check': 0})
+        else:
+            await message.answer("Мне не удалось распознать QR-код, попробуй ещё раз 🔍",
+                                 reply_markup=kb.single_menu_btn)
 
 @router_main.message(User.check_date, F.text)
 async def answer_message(message: types.Message, state: FSMContext):
@@ -182,7 +188,7 @@ async def answer_message(message: types.Message, state: FSMContext):
         day, month, year = date_text[0].split('.')
         date = f"20{year}-{month}-{day}T{date_text[1]}:00"
         await state.set_data({"data_check": [date]})
-        await message.answer("Скинь сумму чека")
+        await message.answer("Укажи сумма покупки. Обязательно прописывай точную сумму с копейками через точку «.» 💕")
         await state.set_state(User.check_summ)
 
 
@@ -194,7 +200,7 @@ async def answer_message(message: types.Message, state: FSMContext):
     data_check = (await state.get_data())['data_check']
     data_check.append(sum_text)
     await state.set_data({'data_check': data_check})
-    await message.answer("Скинь ФН")
+    await message.answer("Укажи следующие данные: ФН")
     await state.set_state(User.check_fn)
 
 @router_main.message(User.check_fn, F.text)
@@ -203,7 +209,7 @@ async def answer_message(message: types.Message, state: FSMContext):
     data_check = (await state.get_data())['data_check']
     data_check.append(fn)
     await state.set_data({'data_check': data_check})
-    await message.answer("Скинь ФД")
+    await message.answer("Укажи следующие данные: ФД")
     await state.set_state(User.check_fd)
 
 @router_main.message(User.check_fd, F.text)
@@ -212,7 +218,7 @@ async def answer_message(message: types.Message, state: FSMContext):
     data_check = (await state.get_data())['data_check']
     data_check.append(fd)
     await state.set_data({'data_check': data_check})
-    await message.answer("Скинь ФП")
+    await message.answer("Укажи следующие данные: ФП")
     await state.set_state(User.check_fs)
 
 @router_main.message(User.check_fs, F.text)
@@ -222,16 +228,14 @@ async def answer_message(message: types.Message, state: FSMContext):
     data_check.append(fs)
     data_check.append('1')
     id_check = data_check[0].replace('-', '').replace(':', '')[:-2] + data_check[3] + data_check[4]
-    print(id_check)
     res = await get_check(id_check)
     if res:
         await message.answer("Этот чек уже был загружен! Попробуй прислать другой 🙌",
                              reply_markup=kb.single_menu_btn)
     else:
-        print(data_check)
         items, retail_place = fns_api.get_items_check(data_check)
         if items is None:
-            await message.answer("Ошибка с сервером, попробуй позже",
+            await message.answer("Мнe не удалось найти чек, возможно была допущена ошибка 🔍",
                                  reply_markup=kb.single_menu_btn)
         else:
             n_point, sum_bb = check_items(items)
