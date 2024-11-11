@@ -194,11 +194,17 @@ async def get_analytics():
             await session.execute(
                 select(NumberAcceptVideo.social_network, NumberAcceptVideo.number)
             )).fetchall())
+
+        # Сколько чеков загружено всего
+        results.append((await session.execute(func.count(Check.id))).scalar())
+        # Сколько чеков по магазинам
+        results.append((
+           await session.execute(
+               select(Check.name_shop, func.count(Check.id)).group_by(
+                   Check.name_shop)
+           )).fetchall())
+        # На какую общую сумму товаров бб было во всех чеках
+        results.append((await session.execute(func.sum(Check.price_bb))).scalar())
+        # Сколько баллов в общем засчитали за чеки
+        results.append((await session.execute(func.sum(Check.points))).scalar())
     return results
-
-
-# На будущее по чекам
-# Сколько чеков загружено всего
-# Сколько чеков по магазинам
-# На какую общую сумму товаров бб было во всех чеках
-# Сколько баллов в общем засчитали за чеки

@@ -34,6 +34,16 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 {stats[6][0][0]}: {stats[6][0][1]}
 {stats[6][1][0]}: {stats[6][1][1]}
 {stats[6][2][0]}: {stats[6][2][1]}
+
+Сколько чеков загружено всего: {stats[7]}
+Сколько чеков по магазинам
+{stats[7][0][0]}: {stats[7][0][1]}
+{stats[7][1][0]}: {stats[7][1][1]}
+{stats[7][2][0]}: {stats[7][2][1]}
+{stats[7][3][0]}: {stats[7][3][1]}
+{stats[7][4][0]}: {stats[7][4][1]}
+Сумма товаров бб было по всем чекам: {stats[8]}
+Сколько баллов в общем засчитали за чеки: {stats[9]}
 """
     await message.answer(msg)
 
