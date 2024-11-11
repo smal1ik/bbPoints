@@ -125,23 +125,23 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
         await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
 
-@router_main.message(F.data == 'new_start')
-async def cmd_message(message: types.Message, state: FSMContext, bot: Bot):
-    if message.from_user.id == message.chat.id:
+@router_main.callback_query(F.data == 'new_start')
+async def cmd_message(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
+    if callback.from_user.id == callback.chat.id:
         await state.set_state(User.start)
         ref = 0
 
-        user = await get_user(message.from_user.id)
+        user = await get_user(callback.from_user.id)
 
         if not user:
-            await bot.set_chat_menu_button(message.from_user.id, menu_button=kb.web_app_button)
-            await message.answer(copy.start_msg)
-            await add_user(message.from_user.id, message.from_user.first_name, message.from_user.username, int(ref))
+            await bot.set_chat_menu_button(callback.from_user.id, menu_button=kb.web_app_button)
+            await callback.message.answer(copy.start_msg)
+            await add_user(callback.from_user.id, callback.from_user.first_name, callback.from_user.username, int(ref))
         elif ref:
-            await message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
+            await callback.message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
 
         ref = encode_payload(message.from_user.id)
-        await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
+        await callback.message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
 
 @router_main.callback_query(F.data == 'menu')
