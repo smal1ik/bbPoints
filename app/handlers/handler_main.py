@@ -136,7 +136,8 @@ async def answer_message(message: types.Message, state: FSMContext):
                                  reply_markup=kb.single_menu_btn)
         else:
             # Функция, которая считает сколько баллов нужно добавить. Так же она работает с API ФНС.
-            items = fns_api.get_items_check(data_check)
+            items, retail_place = fns_api.get_items_check(data_check)
+            print(items, retail_place)
             if items is None:
                 await message.answer("Мнe не удалось распознать QR-код, попробуй ещё раз 🔍",
                                      reply_markup=kb.single_menu_btn)
