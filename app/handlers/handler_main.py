@@ -333,16 +333,12 @@ async def answer_message(message: types.Message):
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
     try:
         user = await get_user(message.from_user.id)
-        print(user)
-        print(message.reply_to_message.forward_origin)
-        print(message.reply_to_message.forward_origin.message_id)
-        print(list_channel_message)
         if message.reply_to_message.forward_origin and (message.reply_to_message.forward_origin.message_id in list_channel_message) and user and not user.send_comment:
             await bot.send_message(message.from_user.id, copy.comment_msg)
             api.add_points(message.from_user.id, 10)
             await user_send_comment(message.from_user.id)
             await arqredis.enqueue_job(
-                'reset_send_comment', _defer_by=timedelta(hours=1), telegram_id=message.from_user.id
+                'reset_send_comment', _defer_by=timedelta(seconds=3), telegram_id=message.from_user.id
             )
     except Exception as e:
        print(e)
