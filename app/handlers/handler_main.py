@@ -135,7 +135,6 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
 
         if not user:
             await bot.set_chat_menu_button(callback.from_user.id, menu_button=kb.web_app_button)
-            await callback.message.answer(copy.start_msg)
             await add_user(callback.from_user.id, callback.from_user.first_name, callback.from_user.username, int(ref))
         elif ref:
             await callback.message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
