@@ -26,7 +26,7 @@ async def user_send_comment(tg_id: BigInteger):
     async with async_session() as session:
         result = await session.scalar(select(User).where(User.tg_id == tg_id))
         await session.execute(update(User).where(User.tg_id == tg_id).values(
-            send_comment=True, count_comment=result.result + 1)
+            send_comment=True, count_comment=result.count_comment + 1)
         )
         await session.commit()
 
