@@ -21,6 +21,7 @@ router_main = Router()
 @router_main.message(Command('statistics'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
     stats = await get_analytics()
+    print(stats)
     msg = f"""Всего пользователей: {stats[0]}
 Пришедших по рефералке: {stats[1]}
 Засчитано комментариев: {stats[2]}
@@ -37,13 +38,13 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 
 Сколько чеков загружено всего: {stats[7]}
 Сколько чеков по магазинам
-{stats[7][0][0]}: {stats[7][0][1]}
-{stats[7][1][0]}: {stats[7][1][1]}
-{stats[7][2][0]}: {stats[7][2][1]}
-{stats[7][3][0]}: {stats[7][3][1]}
-{stats[7][4][0]}: {stats[7][4][1]}
-Сумма товаров бб было по всем чекам: {stats[8]}
-Сколько баллов в общем засчитали за чеки: {stats[9]}
+{stats[8][0][0]}: {stats[8][0][1]}
+{stats[8][1][0]}: {stats[8][1][1]}
+{stats[8][2][0]}: {stats[8][2][1]}
+{stats[8][3][0]}: {stats[8][3][1]}
+{stats[8][4][0]}: {stats[8][4][1]}
+Сумма товаров бб по всем чекам: {stats[9]}
+Сколько баллов в общем засчитали за чеки: {stats[10]}
 """
     await message.answer(msg)
 
@@ -126,6 +127,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 async def answer_message(message: types.Message, state: FSMContext):
     await message.bot.download(file=message.photo[-1].file_id, destination=f'users_check/{message.from_user.id}.jpg')
     id_check, data_check = read_qrcode(message.from_user.id)
+    print(id_check, data_check)
     if id_check:
         res = await get_check(id_check)
         if res:

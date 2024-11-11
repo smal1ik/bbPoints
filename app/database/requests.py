@@ -200,7 +200,7 @@ async def get_analytics():
         # Сколько чеков по магазинам
         results.append((
            await session.execute(
-               select(Check.name_shop, func.count(Check.id)).group_by(
+               select(Check.name_shop, func.count(Check.id)).where(Check.points > 0).group_by(
                    Check.name_shop)
            )).fetchall())
         # На какую общую сумму товаров бб было во всех чеках
