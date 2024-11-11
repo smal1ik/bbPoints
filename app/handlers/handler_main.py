@@ -180,7 +180,7 @@ async def answer_message(message: types.Message, state: FSMContext):
         await message.answer("Неверный формат")
     else:
         day, month, year = date_text[0].split('.')
-        date = f"20{year}-{month}-{year}T{date_text[1]}:00"
+        date = f"20{year}-{month}-{day}T{date_text[1]}:00"
         await state.set_data({"data_check": [date]})
         await message.answer("Скинь сумму чека")
         await state.set_state(User.check_summ)
