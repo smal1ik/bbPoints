@@ -99,11 +99,11 @@ def get_items_check(data_check):
     print(date, fn, fiscal_document_id, fiscal_sign)
     if token is None:
         print("token", token)
-        return None
+        return None, None
     check_id = send_message_request(token, s, date, fn, fiscal_document_id, fiscal_sign)
     if check_id is None:
         print("check_id", check_id)
-        return None
+        return None, None
     headers['FNS-OpenApi-Token'] = token
     req = url + "ais3/KktService/0.1/1.1"
     body = f"""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="urn://x-artefacts-gnivc-ru/inplat/servin/OpenApiAsyncMessageConsumerService/types/1.0">
