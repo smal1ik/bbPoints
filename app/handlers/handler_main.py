@@ -165,7 +165,8 @@ async def answer_message(message: types.Message, state: FSMContext):
     else:
         await message.answer("Мне не удалось распознать QR-код, попробуй ещё раз 🔍",
                              reply_markup=kb.single_menu_btn)
-        await state.set_data({'count_check': count_check + 1})
+        count_check += 1
+        await state.set_data({'count_check': count_check})
 
 
     if count_check == 1:
