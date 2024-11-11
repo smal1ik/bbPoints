@@ -120,4 +120,4 @@ def get_items_check(data_check):
         res = exec_request(req, body, headers, n, slp)
         if res is not None:
             return res
-    return None
+    return None, None
