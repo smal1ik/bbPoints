@@ -35,7 +35,7 @@ class Check(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     check_id: Mapped[str] = mapped_column()
     name_shop: Mapped[str] = mapped_column(nullable=True)
-    price_bb: Mapped[int] = mapped_column(nullable=True, default=0)
+    price_bb: Mapped[float] = mapped_column(nullable=True, default=0)
     points: Mapped[int] = mapped_column(nullable=True, default=0)
 
 
