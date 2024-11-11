@@ -24,8 +24,9 @@ async def add_user(tg_id: BigInteger, first_name: str, username: str, user_refs:
 
 async def user_send_comment(tg_id: BigInteger):
     async with async_session() as session:
+        result = await session.scalar(select(User).where(User.tg_id == tg_id))
         await session.execute(update(User).where(User.tg_id == tg_id).values(
-            send_comment=True)
+            send_comment=True, count_comment=result.result + 1)
         )
         await session.commit()
 
@@ -158,3 +159,17 @@ async def search_link_video(link_video):
     async with async_session() as session:
         result = await session.scalar(select(LinkVideo).where(LinkVideo.link_video == link_video))
     return result
+
+
+async def get_analytics():
+    results = []
+    async with async_session() as session:
+        results.append((await session.execute(func.count(User.id))).scalar())
+        results.append((await session.execute(func.count(User.id).where(User.user_refs != 0))).scalar())
+        results.append((await session.execute(func.sum(User.count_comment))).scalar())
+        # results.append(str(round((await session.execute(func.avg(User.count_generation))).scalar(), 2)))
+        # results.append((await session.execute(func.sum(User.count_answers))).scalar())
+        # results.append((await session.execute(select(func.count()).where(User.count_answers == 0))).scalar())
+        # results.append((await session.execute(select(func.count()).where(User.count_answers >= 1))).scalar())
+        # results.append((await session.execute(select(User.user_from, func.count(User.user_from)).group_by(User.user_from))).fetchall())
+    return results

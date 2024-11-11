@@ -18,6 +18,11 @@ ID_CHANNEL = int(config('ID_CHANNEL'))
 ID_CHAT = int(config('ID_CHAT'))
 router_main = Router()
 
+@router_main.message(Command('statistics'))
+async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
+    stats = await get_analytics()
+    await message.answer(str(stats))
+
 @router_main.message(Command('filter_account'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
     await message.answer("Скинь ссылку, которую необходимо заблокировкать\nДля выхода напиши /end")

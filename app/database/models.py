@@ -20,6 +20,7 @@ class User(Base):
     username: Mapped[str] = mapped_column()
     user_refs = mapped_column(BigInteger, nullable=True) # рефка
     send_comment = mapped_column(Boolean, default=False)
+    count_comment: Mapped[int] = mapped_column(default=0, nullable=True)
 
 
 class Point(Base):
