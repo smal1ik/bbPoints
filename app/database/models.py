@@ -65,6 +65,12 @@ class LinkVideo(Base):
     tg_id = mapped_column(BigInteger)
     link_video: Mapped[str] = mapped_column()
 
+class NumberAcceptVideo(Base):
+    __tablename__ = 'number_accept_video'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    social_network: Mapped[str] = mapped_column()
+    number: Mapped[int] = mapped_column(default=0)
+
 
 async def async_main():
     async with engine.begin() as conn:

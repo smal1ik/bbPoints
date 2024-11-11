@@ -291,7 +291,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
 
         await bot.send_message(-1002475070676,
                                msg,
-                               reply_markup=kb.get_points_btn(message.from_user.id),
+                               reply_markup=kb.get_points_btn(message.from_user.id, sn),
                                disable_web_page_preview=True)
 
     btns, check = await kb.get_sn_btn(message.from_user.id)
@@ -303,7 +303,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
 
 @router_main.callback_query(F.data.contains('points'))
 async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
-    _, points, tg_id = callback.data.split('__')
+    _, sn, points, tg_id = callback.data.split('__')
     await callback.message.edit_reply_markup()
     if points == '0':
         await bot.send_message(tg_id, copy.cancel_msg)

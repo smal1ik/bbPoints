@@ -134,18 +134,18 @@ async def get_sn_btn(tg_id: int):
     return sn_btn, check
 
 list_point = ['100', '200', '400', '800', '1500']
-def get_points_btn(tg_id: int):
+def get_points_btn(tg_id: int, sn: str):
     points_btn = InlineKeyboardBuilder()
     for elem in list_point:
         points_btn.row(
             types.InlineKeyboardButton(
                 text=elem,
-                callback_data=f"points__{elem}__{tg_id}")
+                callback_data=f"points__{sn}__{elem}__{tg_id}")
         )
     points_btn.row(
         types.InlineKeyboardButton(
             text='Отказ',
-            callback_data=f"points__0__{tg_id}")
+            callback_data=f"points__{sn}__0__{tg_id}")
     )
     points_btn = points_btn.as_markup()
     return points_btn

@@ -1,4 +1,5 @@
-from app.database.models import User, async_session, Point, SocialNetwork, Check, Channel, Post, LinkVideo
+from app.database.models import User, async_session, Point, SocialNetwork, Check, Channel, Post, LinkVideo, \
+    NumberAcceptVideo
 from sqlalchemy import select, BigInteger, update, delete, func
 
 from app.utils import api
@@ -168,6 +169,14 @@ async def search_link_video(link_video):
         result = await session.scalar(select(LinkVideo).where(LinkVideo.link_video == link_video))
     return result
 
+async def update_number_accept_video(social_network: str):
+    async with async_session() as session:
+        result = await session.scalar(select(NumberAcceptVideo).where(NumberAcceptVideo.social_network == social_network))
+        await session.execute(update(NumberAcceptVideo).where(NumberAcceptVideo.id == social_network).values(
+            number_point=result.number + 1)
+        )
+        await session.commit()
+
 
 async def get_analytics():
     results = []
@@ -181,7 +190,10 @@ async def get_analytics():
             await session.execute(
                 select(SocialNetwork.social_network, func.count(SocialNetwork.id)).group_by(SocialNetwork.social_network)
             )).fetchall())
-        # 7. Сколько видео залетело по каждой соц сети (именно засчитали)
+        results.append((
+            await session.execute(
+                select(NumberAcceptVideo.social_network, NumberAcceptVideo.number)
+            )).fetchall())
     return results
 
 
