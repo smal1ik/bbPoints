@@ -165,7 +165,7 @@ async def get_analytics():
     results = []
     async with async_session() as session:
         results.append((await session.execute(func.count(User.id))).scalar())
-        results.append((await session.execute(func.count(User.id).filter(User.user_refs != 0))).scalar())
+        results.append((await session.execute(func.count(select(User.id).where(User.user_refs != 0)))).scalar())
         results.append((await session.execute(func.sum(User.count_comment))).scalar())
         # results.append(str(round((await session.execute(func.avg(User.count_generation))).scalar(), 2)))
         # results.append((await session.execute(func.sum(User.count_answers))).scalar())
