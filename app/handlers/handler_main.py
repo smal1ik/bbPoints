@@ -16,6 +16,11 @@ from decouple import config
 
 ID_CHANNEL = int(config('ID_CHANNEL'))
 ID_CHAT = int(config('ID_CHAT'))
+synonyms = {'яблоко': 'Золотое Яблоко',
+            'лэтуаль': 'Лэтуаль',
+            'магнит': 'Магнит',
+            'рив': 'Рив Гош',
+            None: 'Другие магазины'}
 router_main = Router()
 
 @router_main.message(Command('statistics'))
@@ -38,11 +43,11 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 
 Сколько чеков загружено всего: {stats[7]}
 Сколько чеков по магазинам
-{stats[8][0][0]}: {stats[8][0][1]}
-{stats[8][1][0]}: {stats[8][1][1]}
-{stats[8][2][0]}: {stats[8][2][1]}
-{stats[8][3][0]}: {stats[8][3][1]}
-{stats[8][4][0]}: {stats[8][4][1]}
+{synonyms[stats[8][0][0]]}: {stats[8][0][1]}
+{synonyms[stats[8][1][0]]}: {stats[8][1][1]}
+{synonyms[stats[8][2][0]]}: {stats[8][2][1]}
+{synonyms[stats[8][3][0]]}: {stats[8][3][1]}
+{synonyms[stats[8][4][0]]}: {stats[8][4][1]}
 Сумма товаров бб по всем чекам: {stats[9]}
 Сколько баллов в общем засчитали за чеки: {stats[10]}
 """
@@ -127,7 +132,6 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 async def answer_message(message: types.Message, state: FSMContext):
     await message.bot.download(file=message.photo[-1].file_id, destination=f'users_check/{message.from_user.id}.jpg')
     id_check, data_check = read_qrcode(message.from_user.id)
-    print(id_check, data_check)
     if id_check:
         res = await get_check(id_check)
         if res:
