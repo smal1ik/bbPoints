@@ -215,7 +215,6 @@ async def answer_message(message: types.Message, state: FSMContext):
 
 @router_main.message(User.check_fs, F.text)
 async def answer_message(message: types.Message, state: FSMContext):
-    await state.set_data({'count_check': 0})
     fs = message.text
     data_check = (await state.get_data())['data_check']
     data_check.append(fs)
@@ -244,6 +243,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                 await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
     await state.set_state(User.start)
     ref = encode_payload(message.from_user.id)
+    await state.set_data({'count_check': 0})
     await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
 # ================================Проверить упоминание в посте===================================================
