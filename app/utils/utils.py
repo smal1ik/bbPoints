@@ -38,6 +38,16 @@ def bb_post_check(text: str):
             return False
     return True
 
+def get_id_posts():
+    return list_channel_message
+
+def rewrite_id_posts(id_posts: str):
+    global list_channel_message
+    list_channel_message = id_posts.split()
+    with open('app/utils/posts_id.txt', 'r+') as file:
+        file.truncate(0)
+        file.write(" ".join(str(x) for x in list_channel_message))
+        file.close()
 
 def add_new_id_post(id_post: int):
     if len(list_channel_message) == 5:

@@ -24,6 +24,9 @@ synonyms = {'яблоко': 'Золотое Яблоко',
             None: 'Другие магазины'}
 router_main = Router()
 
+
+
+
 @router_main.message(Command('statistics'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
     stats = await get_analytics()
@@ -76,6 +79,24 @@ async def answer_message(message: types.Message, state: FSMContext):
         await state.set_state(User.start)
         ref = encode_payload(message.from_user.id)
         await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
+
+
+@router_main.message(Command('new_list_posts'))
+async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
+    posts_id = get_id_posts()
+    posts_id = [str(elem) for elem in posts_id]
+    await message.answer(" ".join(posts_id))
+    await state.set_state(User.admin_new_posts)
+
+
+@router_main.message(User.admin_new_posts)
+async def message(message: types.Message, state: FSMContext):
+    posts_id = message.text
+    rewrite_id_posts(posts_id)
+    ref = encode_payload(message.from_user.id)
+    await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
+    await state.set_state(User.start)
+
 
 @router_main.message(Command('test'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
