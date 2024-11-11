@@ -477,8 +477,9 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
 
 @router_main.channel_post(F.chat.id == ID_CHANNEL)
 async def answer_message(message: types.Message):
-    print("Новый пост")
-    add_new_id_post(message.message_id)
+    if not message.pinned_message:
+        print("Новый пост")
+        add_new_id_post(message.message_id)
 
 
 @router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False)  # ID ЧАТА
