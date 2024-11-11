@@ -25,8 +25,6 @@ synonyms = {'яблоко': 'Золотое Яблоко',
 router_main = Router()
 
 
-
-
 @router_main.message(Command('statistics'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
     stats = await get_analytics()
@@ -113,6 +111,25 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
                     ref = 0
         else:
             ref = 0
+
+        user = await get_user(message.from_user.id)
+
+        if not user:
+            await bot.set_chat_menu_button(message.from_user.id, menu_button=kb.web_app_button)
+            await message.answer(copy.start_msg)
+            await add_user(message.from_user.id, message.from_user.first_name, message.from_user.username, int(ref))
+        elif ref:
+            await message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
+
+        ref = encode_payload(message.from_user.id)
+        await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
+
+
+@router_main.message(F.data == 'start')
+async def cmd_message(message: types.Message, state: FSMContext, bot: Bot):
+    if message.from_user.id == message.chat.id:
+        await state.set_state(User.start)
+        ref = 0
 
         user = await get_user(message.from_user.id)
 
