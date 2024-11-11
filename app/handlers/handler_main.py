@@ -140,7 +140,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
         elif ref:
             await callback.message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
 
-        ref = encode_payload(message.from_user.id)
+        ref = encode_payload(callback.from_user.id)
         await callback.message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
 
