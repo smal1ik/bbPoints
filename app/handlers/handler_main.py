@@ -96,7 +96,7 @@ async def message(message: types.Message, state: FSMContext):
     await state.set_state(User.start)
 
 
-@router_main.message(Command('test'))
+@router_main.message(Command('start'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
     if message.from_user.id == message.chat.id:
         await state.set_state(User.start)
