@@ -331,7 +331,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot, ar
             api.add_points(message.from_user.id, 10)
             await user_send_comment(message.from_user.id)
             await arqredis.enqueue_job(
-                'reset_send_comment', _defer_by=timedelta(seconds=10), telegram_id=message.from_user.id
+                'reset_send_comment', _defer_by=timedelta(hours=1), telegram_id=message.from_user.id
             )
     except Exception as e:
        print(e)
