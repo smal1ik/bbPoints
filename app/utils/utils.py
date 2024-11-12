@@ -28,7 +28,7 @@ def read_qrcode(tg_id):
         os.remove(f'users_check/{tg_id}.jpg')
 
 
-synonym_bb = ['t.me/beautybombrussia', 't.me/beautybomb', '@beautybomb', '@beautybombrussia']
+synonym_bb = ['t.me/beautybombrussia', 't.me/beautybomb', '@beautybomb', '@beautybombrussia', '#bbcore']
 
 
 def bb_post_check(text: str):
