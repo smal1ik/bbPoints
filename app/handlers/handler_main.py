@@ -30,7 +30,7 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
     stats = await get_analytics()
     msg = f"""Всего пользователей: {stats[0]}
 Пришедших по рефералке: {stats[1]}
-Пришедших из socialjet: {stats[2]}
+Пришедших из sociallead: {stats[2]}
 Засчитано комментариев: {stats[3]}
 Засчитано постов: {stats[4]}
 Всего постов скинуто: {stats[5]}
