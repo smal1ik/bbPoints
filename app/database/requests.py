@@ -182,7 +182,8 @@ async def get_analytics():
     results = []
     async with async_session() as session:
         results.append((await session.execute(func.count(User.id))).scalar())
-        results.append((await session.execute(select(func.count()).where(User.user_refs != 0))).scalar())
+        results.append((await session.execute(select(func.count()).where(User.user_refs != 0, User.user_refs != 1))).scalar())
+        results.append((await session.execute(select(func.count()).where(User.user_refs == 1))).scalar())
         results.append((await session.execute(func.sum(User.count_comment))).scalar())
         results.append((await session.execute(func.count(Post.id))).scalar())
         results.append((await session.execute(func.sum(Channel.count_post))).scalar())

@@ -30,28 +30,29 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
     stats = await get_analytics()
     msg = f"""Всего пользователей: {stats[0]}
 Пришедших по рефералке: {stats[1]}
-Засчитано комментариев: {stats[2]}
-Засчитано постов: {stats[3]}
-Всего постов скинуто: {stats[4]}
+Пришедших из socialjet: {stats[2]}
+Засчитано комментариев: {stats[3]}
+Засчитано постов: {stats[4]}
+Всего постов скинуто: {stats[5]}
 Сколько аккаунтов каждого вида привязали
-{stats[5][0][0]}: {stats[5][0][1]}
-{stats[5][1][0]}: {stats[5][1][1]}
-{stats[5][2][0]}: {stats[5][2][1]}
-{stats[5][3][0]}: {stats[5][3][1]}
-Сколько видео залетело по каждой соц сети
 {stats[6][0][0]}: {stats[6][0][1]}
 {stats[6][1][0]}: {stats[6][1][1]}
 {stats[6][2][0]}: {stats[6][2][1]}
+{stats[6][3][0]}: {stats[6][3][1]}
+Сколько видео залетело по каждой соц сети
+{stats[7][0][0]}: {stats[7][0][1]}
+{stats[7][1][0]}: {stats[7][1][1]}
+{stats[7][2][0]}: {stats[7][2][1]}
 
-Сколько чеков загружено всего: {stats[7]}
+Сколько чеков загружено всего: {stats[8]}
 Сколько чеков по магазинам
-{synonyms[stats[8][0][0]]}: {stats[8][0][1]}
-{synonyms[stats[8][1][0]]}: {stats[8][1][1]}
-{synonyms[stats[8][2][0]]}: {stats[8][2][1]}
-{synonyms[stats[8][3][0]]}: {stats[8][3][1]}
-{synonyms[stats[8][4][0]]}: {stats[8][4][1]}
-Сумма товаров бб по всем чекам: {stats[9]}
-Сколько баллов в общем засчитали за чеки: {stats[10]}
+{synonyms[stats[9][0][0]]}: {stats[9][0][1]}
+{synonyms[stats[9][1][0]]}: {stats[9][1][1]}
+{synonyms[stats[9][2][0]]}: {stats[9][2][1]}
+{synonyms[stats[9][3][0]]}: {stats[9][3][1]}
+{synonyms[stats[9][4][0]]}: {stats[9][4][1]}
+Сумма товаров бб по всем чекам: {stats[10]}
+Сколько баллов в общем засчитали за чеки: {stats[11]}
 """
     await message.answer(msg)
 
@@ -102,7 +103,8 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
     if message.from_user.id == message.chat.id:
         await state.set_state(User.start)
         args = command.args
-        if args:
+        ref = 0
+        if args and len(args) != 24:
             ref = decode_payload(args)
             if ref == str(message.from_user.id):  # Своя же рефка
                 ref = 0
@@ -118,6 +120,9 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
         if not user:
             await bot.set_chat_menu_button(message.from_user.id, menu_button=kb.web_app_button)
             await message.answer(copy.start_msg)
+            if args and len(args) == 24 and ref == 0:
+                ref = 1
+                api.postback(args)
             await add_user(message.from_user.id, message.from_user.first_name, message.from_user.username, int(ref))
         elif ref:
             await message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
@@ -485,7 +490,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
 
 @router_main.channel_post(F.chat.id == ID_CHANNEL)
 async def answer_message(message: types.Message):
-    if not message.pinned_message:
+    if not message.pinned_message and (message.text or message.caption):
         print("Новый пост")
         add_new_id_post(message.message_id)
 
