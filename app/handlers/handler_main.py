@@ -206,7 +206,7 @@ async def answer_message(message: types.Message, state: FSMContext):
 
     dead_date = datetime.strptime("20241105", "%Y%m%d")
     check_date = datetime.strptime(id_check[0:8], "%Y%m%d")
-    if (check_date - dead_date) < 0:
+    if (check_date - dead_date).days < 0:
         await message.answer("Упс, кажется, твой чек слишком старый 💔 Отправь, пожалуйста, свежий чек, чтобы мы смогли распознать его ✍🏻", reply_markup=kb.single_menu_btn)
         return
 
@@ -264,7 +264,7 @@ async def answer_message(message: types.Message, state: FSMContext):
 
         dead_date = datetime.strptime("20241105", "%Y%m%d")
         check_date = datetime.strptime(date[0:10], "%Y-%m-%d")
-        if (check_date - dead_date) < 0:
+        if (check_date - dead_date).days < 0:
             await message.answer(
                 "Упс, кажется, твой чек слишком старый 💔 Отправь, пожалуйста, свежий чек, чтобы мы смогли распознать его ✍🏻",
                 reply_markup=kb.single_menu_btn)
