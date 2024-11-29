@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from aiogram.filters.command import Command
 from aiogram import types, F, Router, Bot, BaseMiddleware
@@ -203,6 +203,13 @@ async def answer_message(message: types.Message, state: FSMContext):
         count_check = count_check.get('count_check')
     await message.bot.download(file=message.photo[-1].file_id, destination=f'users_check/{message.from_user.id}.jpg')
     id_check, data_check = read_qrcode(message.from_user.id)
+
+    dead_date = datetime.strptime("20241105", "%Y%m%d")
+    check_date = datetime.strptime(id_check[0:7], "%Y%m%d")
+    if (check_date - dead_date) < 0:
+        await message.answer("Упс, кажется, твой чек слишком старый 💔 Отправь, пожалуйста, свежий чек, чтобы мы смогли распознать его ✍🏻", reply_markup=kb.single_menu_btn)
+        return
+
     if id_check:
         res = await get_check(id_check)
         if res:
@@ -254,6 +261,15 @@ async def answer_message(message: types.Message, state: FSMContext):
     else:
         day, month, year = date_text[0].split('.')
         date = f"20{year}-{month}-{day}T{date_text[1]}:00"
+
+        dead_date = datetime.strptime("20241105", "%Y%m%d")
+        check_date = datetime.strptime(date[0:9], "%Y-%m-%d")
+        if (check_date - dead_date) < 0:
+            await message.answer(
+                "Упс, кажется, твой чек слишком старый 💔 Отправь, пожалуйста, свежий чек, чтобы мы смогли распознать его ✍🏻",
+                reply_markup=kb.single_menu_btn)
+            return
+
         await state.set_data({"data_check": [date]})
         await message.answer("Укажи сумма покупки. Обязательно прописывай точную сумму с копейками через точку «.» 💕")
         await state.set_state(User.check_summ)
