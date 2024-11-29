@@ -1,9 +1,17 @@
 from app.database.models import User, async_session, Point, SocialNetwork, Check, Channel, Post, LinkVideo, \
-    NumberAcceptVideo
+    NumberAcceptVideo, PointsLog
 from sqlalchemy import select, BigInteger, update, delete, func
 
 from app.utils import api
 
+async def insert_point_log(tg_id: BigInteger, from_points: str, number_points: int,
+                           channel_id: BigInteger = 0, check_id: str = ''):
+
+    async with async_session() as session:
+        session.add(PointsLog(tg_id=tg_id, from_points=from_points, number_points=number_points,
+                              channel_id=channel_id, check_id=check_id))
+
+        await session.commit()
 
 async def add_user(tg_id: BigInteger, first_name: str, username: str, user_refs: BigInteger):
     """
@@ -22,6 +30,8 @@ async def add_user(tg_id: BigInteger, first_name: str, username: str, user_refs:
         if user_refs:
             api.add_points(user_refs, 20)
             api.add_points(tg_id, 20)
+            await insert_point_log(user_refs, "рефка", 20)
+            await insert_point_log(tg_id, "рефка", 20)
 
 async def user_send_comment(tg_id: BigInteger):
     async with async_session() as session:
@@ -84,6 +94,14 @@ async def get_check(check_id: str):
 async def add_channel(channel_id: BigInteger):
     async with async_session() as session:
         session.add(Channel(channel_id=channel_id))
+        await session.commit()
+        
+
+async def update_tg_id_channel(channel_id: BigInteger, tg_id: BigInteger):
+    async with async_session() as session:
+        await session.execute(update(Channel).where(Channel.channel_id == channel_id).values(
+            tg_id=tg_id)
+        )
         await session.commit()
 
 async def reset_all_channel():
@@ -209,3 +227,4 @@ async def get_analytics():
         # Сколько баллов в общем засчитали за чеки
         results.append((await session.execute(func.sum(Check.points))).scalar())
     return results
+

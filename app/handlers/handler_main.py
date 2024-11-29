@@ -1,11 +1,15 @@
 from datetime import timedelta
 
 from aiogram.filters.command import Command
-from aiogram import types, F, Router, Bot
+from aiogram import types, F, Router, Bot, BaseMiddleware
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InputFile, FSInputFile
 from aiogram.utils.deep_linking import create_start_link, decode_payload, encode_payload
 from arq import ArqRedis
+
+from typing import Callable, Dict, Any, Awaitable
+from aiogram import BaseMiddleware
+from aiogram.types import Message
 
 from app.database.requests import *
 from app.fns import fns_api
@@ -23,6 +27,25 @@ synonyms = {'яблоко': 'Золотое Яблоко',
             'рив': 'Рив Гош',
             None: 'Другие магазины'}
 router_main = Router()
+
+class AntiManyReply(BaseMiddleware):
+    def __init__(self) -> None:
+        self.cache = set()
+
+    async def __call__(
+        self,
+        handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
+        event: Message,
+        data: Dict[str, Any]
+    ) -> Any:
+        if event.chat.id in self.cache:
+            return
+        self.cache.add(event.chat.id)
+        result = await handler(event, data)
+        self.cache.remove(event.chat.id)
+        return result
+
+router_main.message.middleware(AntiManyReply())
 
 
 @router_main.message(Command('statistics'))
@@ -128,7 +151,7 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
             await message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
 
         ref = encode_payload(message.from_user.id)
-        await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
+        await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref), menu_button=kb.web_app_button)
 
 
 @router_main.callback_query(F.data == 'new_start')
@@ -199,6 +222,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                                          reply_markup=kb.single_menu_btn)
                 else:
                     api.add_points(message.from_user.id, n_point)
+                    await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                     retail_name = get_name_retail(retail_place.lower())
                     await add_check(id_check, retail_name, sum_bb, n_point)
                     await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
@@ -288,6 +312,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                                      reply_markup=kb.single_menu_btn)
             else:
                 api.add_points(message.from_user.id, n_point)
+                await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                 retail_name = get_name_retail(retail_place.lower())
                 await add_check(id_check, retail_name, sum_bb, n_point)
                 await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
@@ -306,6 +331,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 @router_main.message(User.wait_repost, F.forward_from_chat[F.type == "channel"].as_("channel"),
                      ((F.text) | (F.caption)))
 async def answer_message(message: types.Message, state: FSMContext):
+    await state.set_state(User.start)
     if message.text:
         text = message.text.lower()
     else:
@@ -317,9 +343,11 @@ async def answer_message(message: types.Message, state: FSMContext):
         await add_channel(id_channel)
         count_post = 0
     else:
+        if not channel.tg_id:
+            await update_tg_id_channel(id_channel, message.from_user.id)
         count_post = channel.number_post
     post = await get_post(id_channel, id_post)
-    if id_post <= 30:
+    if id_post < 30:
         await message.answer(copy.error_post_msg)
         await message.answer("Не могу начислить ВВ-баллы за этот пост, так как пост с упоминанием должен быть минимум 30-м на твоём канале 🥺💙")
     elif bb_post_check(text):
@@ -332,10 +360,10 @@ async def answer_message(message: types.Message, state: FSMContext):
         await message.answer("Поздравляю! Ты заработала свои 20 ВВ-баллов за этот постик 💙")
         await add_post(id_channel, id_post)
         await add_number_post_channel(id_channel)
-        api.add_points(message.from_user.id, 40)
+        api.add_points(message.from_user.id, 20)
+        await insert_point_log(message.from_user.id, "пост", 20, channel_id=id_channel)
 
     await add_count_channel_post(id_channel)
-    await state.set_state(User.start)
     ref = encode_payload(message.from_user.id)
     await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
 
@@ -483,6 +511,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
         await update_number_accept_video(sn)
         await bot.send_message(tg_id, msg)
         api.add_points(int(tg_id), int(points))
+        await insert_point_log(tg_id, "видео", int(points))
 
 
 # ===========================================Комментарии из чата========================================================
@@ -498,10 +527,13 @@ async def answer_message(message: types.Message):
 @router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False)  # ID ЧАТА
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
     try:
+        print(list_channel_message)
         user = await get_user(message.from_user.id)
         if message.reply_to_message.forward_origin and (message.reply_to_message.forward_origin.message_id in list_channel_message) and user and not user.send_comment:
+            print(message.reply_to_message.forward_origin.message_id)
             await bot.send_message(message.from_user.id, copy.comment_msg)
             api.add_points(message.from_user.id, 10)
+            await insert_point_log(message.from_user.id, "комментарий", 10)
             await user_send_comment(message.from_user.id)
             await arqredis.enqueue_job(
                 'reset_send_comment', _defer_by=timedelta(hours=1), telegram_id=message.from_user.id

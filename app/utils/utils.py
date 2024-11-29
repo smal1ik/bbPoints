@@ -58,7 +58,7 @@ def add_new_id_post(id_post: int):
         file.write(" ".join(str(x) for x in list_channel_message))
         file.close()
 
-list_bb_item_check = ['beautybomb', 'bomb', 'beauty bomb']
+list_bb_item_check = ['beautybomb', 'bomb', 'beauty bomb', 'hooliguns', 'romcore', 'romecore']
 def check_items(items):
     res_sum = 0
     for item in items:

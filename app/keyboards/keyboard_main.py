@@ -4,7 +4,7 @@ from aiogram import types
 from app.database.requests import get_social_networks
 sn_list = ['Likee', 'TikTok', 'VK']
 
-web_app_info = types.WebAppInfo(url="https://t.me/beauty_bomb_bot/BeautyBombApp")
+web_app_info = types.WebAppInfo(url="https://beauty-bomb-app.ru/your-web-app/?action=wptelegram_login_webapp&redirect_to=https://beauty-bomb-app.ru")
 web_app_button = types.menu_button_web_app.MenuButtonWebApp(web_app=web_app_info, text='START', type='web_app')
 
 

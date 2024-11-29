@@ -45,6 +45,7 @@ class Channel(Base):
     channel_id = mapped_column(BigInteger)
     number_post: Mapped[int] = mapped_column(default=0)
     count_post: Mapped[int] = mapped_column(default=0, nullable=True)
+    tg_id = mapped_column(BigInteger, default=0, nullable=True)
 
 
 class Post(Base):
@@ -74,6 +75,16 @@ class NumberAcceptVideo(Base):
     social_network: Mapped[str] = mapped_column()
     number: Mapped[int] = mapped_column(default=0)
 
+
+class PointsLog(Base):
+    __tablename__ = 'point_logs'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tg_id = mapped_column(BigInteger)
+    from_points: Mapped[str] = mapped_column()
+    number_points: Mapped[int] = mapped_column(default=0)
+
+    channel_id = mapped_column(BigInteger, default=0, nullable=True)
+    check_id: Mapped[str] = mapped_column(default='', nullable=True)
 
 async def async_main():
     async with engine.begin() as conn:
