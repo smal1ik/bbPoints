@@ -47,9 +47,10 @@ class AntiManyReply(BaseMiddleware):
         self.cache.add(event.chat.id)
         try:
             result = await handler(event, data)
-            print(handler)
             return result
         except Exception as e:
+            if data.get('bots'):
+                await data.get('bots').get('bots')[0].send_message(654557598, e)
             print(e)
         finally:
             self.cache.remove(event.chat.id)
