@@ -90,12 +90,17 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 
 @router_main.message(Command("info_user"))
 async def cmd_start(message: types.Message, state: FSMContext):
-    _, user_id = message.text.split()
-    logs = (await info_user(int(user_id)))[0]
-    msg = ""
-    for log in logs:
-        msg += f"{log[0]}\nколичество: {log[1]}\nсумма: {log[2]}\n"
-    await message.answer(msg[:-1])
+    try:
+        _, user_id = message.text.split()
+        logs = (await info_user(int(user_id)))[0]
+        msg = ""
+        for log in logs:
+            msg += f"{log[0]}\nколичество: {log[1]}\nсумма: {log[2]}\n"
+        await message.answer(msg[:-1])
+    except:
+        await message.answer("Что то не так")
+
+
 @router_main.message(Command('filter_account'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
     await message.answer("Скинь ссылку, которую необходимо заблокировкать\nДля выхода напиши /end")
