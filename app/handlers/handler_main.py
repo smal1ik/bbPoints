@@ -49,7 +49,6 @@ class AntiManyReply(BaseMiddleware):
             result = await handler(event, data)
             return result
         except Exception as e:
-            print(data)
             if data.get('bots'):
                 await data.get('bots')[0].send_message(654557598, str(e))
                 await data.get('bots')[0].send_message(365276269, str(e))
