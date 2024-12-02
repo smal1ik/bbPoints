@@ -45,9 +45,14 @@ class AntiManyReply(BaseMiddleware):
         if event.chat.id in self.cache:
             return
         self.cache.add(event.chat.id)
-        result = await handler(event, data)
-        self.cache.remove(event.chat.id)
-        return result
+        try:
+            result = await handler(event, data)
+
+            return result
+        except Exception as e:
+            print(e)
+        finally:
+            self.cache.remove(event.chat.id)
 
 router_main.message.middleware(AntiManyReply())
 
