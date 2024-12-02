@@ -83,6 +83,14 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 """
     await message.answer(msg)
 
+
+@router_main.message(Command("info_user"))
+async def cmd_start(message: types.Message, state: FSMContext):
+    _, user_id = message.text.split()
+    logs = await info_user(user_id)
+    await message.answer(str(logs))
+    print(logs)
+
 @router_main.message(Command('filter_account'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
     await message.answer("Скинь ссылку, которую необходимо заблокировкать\nДля выхода напиши /end")

@@ -228,3 +228,12 @@ async def get_analytics():
         results.append((await session.execute(func.sum(Check.points))).scalar())
     return results
 
+async def info_user(tg_id: BigInteger):
+    results = []
+    async with async_session() as session:
+        results.append((await session.execute(
+                               select(PointsLog.from_points, func.count(PointsLog.id)).where(PointsLog.tg_id == tg_id).group_by(
+                                   PointsLog.from_points)
+                           )).fetchall())
+
+    return results
