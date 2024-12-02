@@ -94,7 +94,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
     logs = (await info_user(int(user_id)))[0]
     msg = ""
     for log in logs:
-        msg += f"{log[0]}: {log[1]}\n"
+        msg += f"{log[0]}\nколичество: {log[1]}\nсумма: {log[2]}\n"
     await message.answer(msg[:-1])
 @router_main.message(Command('filter_account'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
