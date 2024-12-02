@@ -47,7 +47,7 @@ class AntiManyReply(BaseMiddleware):
         self.cache.add(event.chat.id)
         try:
             result = await handler(event, data)
-            print(data)
+            print(handler)
             return result
         except Exception as e:
             print(e)
