@@ -51,7 +51,7 @@ class AntiManyReply(BaseMiddleware):
         except Exception as e:
             print(data)
             if data.get('bots'):
-                await data.get('bots')[0].send_message(654557598, e)
+                await data.get('bots')[0].send_message(654557598, str(e))
             print(e)
         finally:
             self.cache.remove(event.chat.id)
