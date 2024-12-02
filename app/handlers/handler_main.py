@@ -91,7 +91,7 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 @router_main.message(Command("info_user"))
 async def cmd_start(message: types.Message, state: FSMContext):
     _, user_id = message.text.split()
-    logs = await info_user(user_id)
+    logs = await info_user(int(user_id))
     await message.answer(str(logs))
     print(logs)
 
