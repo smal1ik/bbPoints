@@ -279,12 +279,11 @@ async def answer_message(message: types.Message, state: FSMContext):
 @router_main.message(User.check_date, F.text)
 async def answer_message(message: types.Message, state: FSMContext):
     date_text = message.text.split()
-    if len(date_text) != 2 or len(date_text[1].split(':')) != 2:
+    if len(date_text) != 2 or len(date_text[1].split(':')) != 2 or len(date_text[0]) > 8 or len(date_text[1]) > 5:
         await message.answer("Неверный формат")
     else:
         day, month, year = date_text[0].split('.')
         date = f"20{year}-{month}-{day}T{date_text[1]}:00"
-
         dead_date = datetime.strptime("20241105", "%Y%m%d")
         check_date = datetime.strptime(date[0:10], "%Y-%m-%d")
         if (check_date - dead_date).days < 0:
