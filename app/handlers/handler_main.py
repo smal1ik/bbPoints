@@ -106,6 +106,11 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
     await message.answer("Скинь ссылку, которую необходимо заблокировкать\nДля выхода напиши /end")
     await state.set_state(User.admin)
 
+@router_main.message(Command('test_error'))
+async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
+    await message.answer("Тест ошибки")
+    print(2/0)
+
 @router_main.message(Command('end'))
 async def message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
     ref = encode_payload(message.from_user.id)
