@@ -617,8 +617,6 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
         await bot.send_message(tg_id, copy.msg_photo_link_cancel)
 
 # ===========================================Комментарии из чата========================================================
-
-
 @router_main.channel_post(F.chat.id == ID_CHANNEL)
 async def answer_message(message: types.Message):
     if not message.pinned_message and (message.text or message.caption):
@@ -642,3 +640,11 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot, ar
             )
     except Exception as e:
        print(e)
+
+# ===========================================Написать отзыв=============================================================
+@router_main.callback_query(F.data == 'review')
+async def answer_message(callback: types.CallbackQuery, state: FSMContext):
+    await callback.message.answer(copy.msg_write_review, reply_markup=kb.review_btn)
+
+
+#Написать хэндлер, который отлавливает сообщения в посту, проверяет является ли коммент отзывом и выдаем баллы
