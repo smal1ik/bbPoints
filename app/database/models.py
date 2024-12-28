@@ -21,6 +21,7 @@ class User(Base):
     user_refs = mapped_column(BigInteger, nullable=True) # рефка
     send_comment = mapped_column(Boolean, default=False)
     count_comment: Mapped[int] = mapped_column(default=0, nullable=True)
+    count_comment_cyberbomb: Mapped[int] = mapped_column(default=1, nullable=False)
 
 
 class Point(Base):
@@ -68,6 +69,12 @@ class LinkVideo(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     tg_id = mapped_column(BigInteger)
     link_video: Mapped[str] = mapped_column()
+
+class LinkPhoto(Base):
+    __tablename__ = 'links_photo'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    tg_id = mapped_column(BigInteger)
+    link_photo: Mapped[str] = mapped_column()
 
 class NumberAcceptVideo(Base):
     __tablename__ = 'number_accept_video'

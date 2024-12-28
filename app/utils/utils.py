@@ -59,29 +59,84 @@ def add_new_id_post(id_post: int):
         file.close()
 
 list_bb_item_check = ['beautybomb', 'bomb', 'beauty bomb', 'hooliguns', 'romcore', 'romecore']
+list_cb_item_check = ['cyberbomb', 'cream blush', 'killer roomba', 'contourator', 'xaela ter', 'eyepocalypce',
+                      'not found', 'doomsday', '1101001', 'toxic waste', 'overloaded', 'skipidarushka',
+                      'dirty lick', 'robochic', 'machine oil', 'heavy water', 'chrome nails', 'eye protector',
+                      'walkie talkie', 'spy drone', 'furiosa']
+
+
 def check_items(items):
     res_sum = 0
+    cyberbomb_sum = 0
+    n_cyberbomb_items = 0
+    points = 0
     for item in items:
+        flag = False
         text = item['name'].lower()
         price = int(item['price'])
+
+        for item_split in text.split():
+            if item_split in list_cb_item_check:
+                cyberbomb_sum += price
+                n_cyberbomb_items += 1
+                flag = True
+                break
+        if flag: continue
+
+        for elem in list_cb_item_check:
+            if elem in text:
+                cyberbomb_sum += price
+                n_cyberbomb_items += 1
+                flag = True
+                break
+        if flag: continue
+
+        for item_split in text.split():
+            if item_split in list_bb_item_check:
+                res_sum += price
+                flag = True
+                break
+        if flag: continue
+
         for elem in list_bb_item_check:
             if elem in text:
                 res_sum += price
                 break
 
+    flag = True
+    if cyberbomb_sum >= 500000:
+        points += 4000
+    elif cyberbomb_sum >= 300000:
+        points += 2000
+    elif cyberbomb_sum >= 150000:
+        points += 800
+    elif cyberbomb_sum >= 80000:
+        points += 600
+    elif cyberbomb_sum >= 50000:
+        points += 400
+    elif cyberbomb_sum >= 30000:
+        points += 200
+    else:
+        res_sum += cyberbomb_sum
+        flag = False
+
     if res_sum >= 500000:
-        return 1500, res_sum/100
-    if res_sum >= 300000:
-        return 800, res_sum/100
-    if res_sum >= 150000:
-        return 400, res_sum/100
-    if res_sum >= 80000:
-        return 250, res_sum/100
-    if res_sum >= 50000:
-        return 150, res_sum/100
-    if res_sum >= 30000:
-        return 50, res_sum/100
-    return None, None
+        points += 1500
+    elif res_sum >= 300000:
+        points += 800
+    elif res_sum >= 150000:
+        points += 400
+    elif res_sum >= 80000:
+        points += 250
+    elif res_sum >= 50000:
+        points += 150
+    elif res_sum >= 30000:
+        points += 50
+    if points == 0:
+        return None, None, n_cyberbomb_items
+    if flag:
+        res_sum += cyberbomb_sum
+    return points, res_sum / 100, n_cyberbomb_items
 
 
 retail_names = {
@@ -101,5 +156,13 @@ def get_name_retail(retail_place: str):
             if synonym in retail_place.lower():
                 return name
     return None
+
+list_filter_link_photo = ['vk', 'pinterest', 'dzen', 'instagram', 't.me']
+def filter_link_photo(link):
+    for elem in list_filter_link_photo:
+        if elem in link:
+            return True
+    return False
+
 
 

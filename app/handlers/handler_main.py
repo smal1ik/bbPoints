@@ -51,7 +51,6 @@ class AntiManyReply(BaseMiddleware):
         except Exception as e:
             if data.get('bots'):
                 await data.get('bots')[0].send_message(654557598, str(e))
-                await data.get('bots')[0].send_message(365276269, str(e))
             print(e)
         finally:
             self.cache.remove(event.chat.id)
@@ -257,7 +256,9 @@ async def answer_message(message: types.Message, state: FSMContext):
                 await message.answer("Ох, кажется, очень много запросов на проверки чеки!\n\nСегодня мы не можем принять твой чек, попробуй отправить его завтра 🫶",
                                      reply_markup=kb.single_menu_btn)
             else:
-                n_point, sum_bb = check_items(items)
+                n_point, sum_bb, n_cyberbomb_comments = check_items(items)
+                if n_cyberbomb_comments != 0:
+                    await add_count_comment_cyberbomb(message.from_user.id, n_cyberbomb_comments)
                 if n_point is None:
                     await add_check(id_check)
                     await message.answer("В этом чеке нет товаров от Beauty Bomb 😔 Попробуй прислать другой чек!",
@@ -355,7 +356,9 @@ async def answer_message(message: types.Message, state: FSMContext):
             await message.answer("Мнe не удалось найти чек, возможно была допущена ошибка 🔍",
                                  reply_markup=kb.single_menu_btn)
         else:
-            n_point, sum_bb = check_items(items)
+            n_point, sum_bb, n_cyberbomb_comments = check_items(items)
+            if n_cyberbomb_comments != 0:
+                await add_count_comment_cyberbomb(message.from_user.id, n_cyberbomb_comments)
             if n_point is None:
                 await add_check(id_check)
                 await message.answer("В этом чеке нет товаров от Beauty Bomb 😔 Попробуй прислать другой чек!",
@@ -563,6 +566,54 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
         api.add_points(int(tg_id), int(points))
         await insert_point_log(tg_id, "видео", int(points))
 
+# ===========================================Фото у стенда==============================================================
+@router_main.callback_query(F.data == 'photo_stend')
+async def answer_message(callback: types.CallbackQuery, state: FSMContext):
+    await state.set_state(User.user_wait_link_photo)
+    await callback.message.answer(copy.msg_rule_photo_stend,
+                                  reply_markup=kb.single_menu_btn)
+
+
+@router_main.message(User.user_wait_link_photo, F.text)
+async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
+    link_photo = message.text.replace('https://', '')
+    if filter_link_photo(link_photo):
+        result = await search_link_photo(link_photo)
+        if result:
+            msg = """Упс! Фото не засчитано😭\n\nПроверь, чтобы эта ссылка ещё не была использована ранее 🔍"""
+            await message.answer(msg)
+            return
+        else:
+            await add_link_photo(link_photo)
+            await state.set_state(User.start)
+            await message.answer("Пост на проверке ⏳", reply_markup=kb.single_menu_btn)
+            msg = f"""
+            Фото на проверку
+
+            Пользователь:
+            {message.from_user.id}
+            {message.from_user.first_name}
+            {message.from_user.username}
+            Ссылка на пост {link_photo}"""
+            await bot.send_message(-1002475070676,
+                                   msg,
+                                   reply_markup=kb.get_check_photo_link_btn(message.from_user.id),
+                                   disable_web_page_preview=True)
+    else:
+        await message.answer(copy.msg_error_photo_stend, reply_markup=kb.single_menu_btn)
+
+#Ловим отказы и засчеты
+@router_main.callback_query(F.data.contains('photolink'))
+async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
+    _, result, tg_id = callback.data.split('__')
+    await callback.message.edit_reply_markup()
+    if result == 'accept':
+        msg = "Поздравляю! Этот пост принёс тебе 20 ВВ-баллов 💙"
+        await bot.send_message(tg_id, msg)
+        api.add_points(int(tg_id), 20)
+        await insert_point_log(tg_id, "фото", 20)
+    else:
+        await bot.send_message(tg_id, copy.msg_photo_link_cancel)
 
 # ===========================================Комментарии из чата========================================================
 

@@ -14,4 +14,5 @@ class User(StatesGroup):
     check_fs = State()
     admin = State()
     admin_new_posts = State()
+    user_wait_link_photo = State()
     end = State()

@@ -1,5 +1,5 @@
 from app.database.models import User, async_session, Point, SocialNetwork, Check, Channel, Post, LinkVideo, \
-    NumberAcceptVideo, PointsLog
+    NumberAcceptVideo, PointsLog, LinkPhoto
 from sqlalchemy import select, BigInteger, update, delete, func
 
 from app.utils import api
@@ -38,6 +38,22 @@ async def user_send_comment(tg_id: BigInteger):
         result = await session.scalar(select(User).where(User.tg_id == tg_id))
         await session.execute(update(User).where(User.tg_id == tg_id).values(
             send_comment=True, count_comment=result.count_comment + 1)
+        )
+        await session.commit()
+
+async def add_count_comment_cyberbomb(tg_id: BigInteger, n):
+    async with async_session() as session:
+        result = await session.scalar(select(User).where(User.tg_id == tg_id))
+        await session.execute(update(User).where(User.tg_id == tg_id).values(
+            count_comment_cyberbomb=result.count_comment_cyberbomb + n)
+        )
+        await session.commit()
+
+async def substract_count_comment_cyberbomb(tg_id: BigInteger):
+    async with async_session() as session:
+        result = await session.scalar(select(User).where(User.tg_id == tg_id))
+        await session.execute(update(User).where(User.tg_id == tg_id).values(
+            count_comment_cyberbomb=result.count_comment_cyberbomb - 1)
         )
         await session.commit()
 
@@ -185,6 +201,16 @@ async def add_link_video(tg_id: BigInteger, link_video: str):
 async def search_link_video(link_video):
     async with async_session() as session:
         result = await session.scalar(select(LinkVideo).where(LinkVideo.link_video == link_video))
+    return result
+
+async def add_link_photo(tg_id: BigInteger, link_photo: str):
+    async with async_session() as session:
+        session.add(LinkPhoto(tg_id=tg_id, link_photo=link_photo))
+        await session.commit()
+
+async def search_link_photo(link_photo):
+    async with async_session() as session:
+        result = await session.scalar(select(LinkPhoto).where(LinkPhoto.link_photo == link_photo))
     return result
 
 async def update_number_accept_video(social_network: str):

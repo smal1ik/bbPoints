@@ -53,9 +53,15 @@ def get_menu_btn(ref: str):
     )
     menu_btn.row(
         types.InlineKeyboardButton(
-            text="Проверить упоминание в посте",
-            callback_data="mention")
+            text="Фото у стенда",
+            callback_data="photo_stend"
+        )
     )
+    # menu_btn.row(
+    #     types.InlineKeyboardButton(
+    #         text="Проверить упоминание в посте",
+    #         callback_data="mention")
+    # )
     menu_btn.row(
         types.InlineKeyboardButton(
             text="Конкурс #BBCore",
@@ -65,6 +71,11 @@ def get_menu_btn(ref: str):
         types.InlineKeyboardButton(
             text="Поделиться ботом",
             callback_data="share")
+    )
+    menu_btn.row(
+        types.InlineKeyboardButton(
+            text="Написать отзыв",
+            callback_data="review")
     )
     menu_btn = menu_btn.as_markup()
     return menu_btn
@@ -102,6 +113,22 @@ single_back_btn.row(
     callback_data="back")
 )
 single_back_btn = single_back_btn.as_markup()
+
+
+async def get_check_photo_link_btn(tg_id):
+    check_photo_link_btn = InlineKeyboardBuilder()
+    check_photo_link_btn.row(
+        types.InlineKeyboardButton(
+            text="Засчитать",
+            callback_data=f"photolink__accept__{tg_id}")
+    )
+    check_photo_link_btn.row(
+        types.InlineKeyboardButton(
+            text="Отказ",
+            callback_data=f"photolink__cancel__{tg_id}")
+    )
+    check_photo_link_btn = check_photo_link_btn.as_markup()
+    return check_photo_link_btn
 
 async def get_sn_btn(tg_id: int):
     check = False
