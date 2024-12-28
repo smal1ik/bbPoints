@@ -157,7 +157,7 @@ def get_name_retail(retail_place: str):
                 return name
     return None
 
-list_filter_link_photo = ['vk', 'pinterest', 'dzen', 'instagram', 't.me']
+list_filter_link_photo = ['vk', 'pinterest', 'dzen', 'instagram', 't.me', 'pin.it']
 def filter_link_photo(link):
     for elem in list_filter_link_photo:
         if elem in link:
