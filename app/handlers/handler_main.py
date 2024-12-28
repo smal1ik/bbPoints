@@ -581,8 +581,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
         result = await search_link_photo(link_photo)
         if result:
             msg = """Упс! Фото не засчитано😭\n\nПроверь, чтобы эта ссылка ещё не была использована ранее 🔍"""
-            await message.answer(msg)
-            return
+            await message.answer(msg, reply_markup=kb.single_menu_btn)
         else:
             await add_link_photo(message.from_user.id, link_photo)
             await state.set_state(User.start)
@@ -590,11 +589,11 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
             msg = f"""
             Фото на проверку
 
-            Пользователь:
-            {message.from_user.id}
-            {message.from_user.first_name}
-            {message.from_user.username}
-            Ссылка на пост {link_photo}"""
+Пользователь:
+{message.from_user.id}
+{message.from_user.first_name}
+{message.from_user.username}
+Ссылка на пост {link_photo}"""
             btn = await kb.get_check_photo_link_btn(message.from_user.id)
             await bot.send_message(-1002475070676,
                                    msg,
@@ -611,7 +610,8 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
     if result == 'accept':
         msg = "Поздравляю! Этот пост принёс тебе 20 ВВ-баллов 💙"
         await bot.send_message(tg_id, msg)
-        api.add_points(int(tg_id), 20)
+        tg_id = int(tg_id)
+        api.add_points(tg_id, 20)
         await insert_point_log(tg_id, "фото", 20)
     else:
         await bot.send_message(tg_id, copy.msg_photo_link_cancel)
