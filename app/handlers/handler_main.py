@@ -595,9 +595,10 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
             {message.from_user.first_name}
             {message.from_user.username}
             Ссылка на пост {link_photo}"""
+            btn = await kb.get_check_photo_link_btn(message.from_user.id)
             await bot.send_message(-1002475070676,
                                    msg,
-                                   reply_markup=kb.get_check_photo_link_btn(message.from_user.id),
+                                   reply_markup=btn,
                                    disable_web_page_preview=True)
     else:
         await message.answer(copy.msg_error_photo_stend, reply_markup=kb.single_menu_btn)
