@@ -584,7 +584,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
             await message.answer(msg)
             return
         else:
-            await add_link_photo(link_photo)
+            await add_link_photo(message.from_user.id, link_photo)
             await state.set_state(User.start)
             await message.answer("Пост на проверке ⏳", reply_markup=kb.single_menu_btn)
             msg = f"""
