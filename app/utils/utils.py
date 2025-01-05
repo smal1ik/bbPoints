@@ -165,4 +165,19 @@ def filter_link_photo(link):
     return False
 
 
+review_pattern = ['отзыв', 'нравится', 'текстура',
+                  'запах', 'дизайн', 'упаковка',
+                  'крутой', 'цвет', 'состав',
+                  'рекомендую', 'наносится', 'аромат',
+                  'красиво', 'сияет', 'пигментированный']
+def check_review(text):
+    if len(text) < 100:
+        return False
+    for pattern in review_pattern:
+        if pattern in text:
+            return True
+    return False
+
+
+
 

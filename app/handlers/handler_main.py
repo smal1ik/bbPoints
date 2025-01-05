@@ -21,6 +21,9 @@ from decouple import config
 
 ID_CHANNEL = int(config('ID_CHANNEL'))
 ID_CHAT = int(config('ID_CHAT'))
+ID_POST_REVIEW = int(config('ID_POST_REVIEW'))
+
+
 synonyms = {'яблоко': 'Золотое Яблоко',
             'лэтуаль': 'Лэтуаль',
             'магнит': 'Магнит',
@@ -92,7 +95,6 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 Сколько баллов в общем засчитали за чеки: {stats[11]}
 """
     await message.answer(msg)
-
 
 @router_main.message(Command("info_user"))
 async def cmd_start(message: types.Message, state: FSMContext):
@@ -616,10 +618,26 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
     else:
         await bot.send_message(tg_id, copy.msg_photo_link_cancel)
 
+# ===========================================Написать отзыв=============================================================
+@router_main.callback_query(F.data == 'review')
+async def answer_message(callback: types.CallbackQuery, state: FSMContext):
+    await callback.message.answer(copy.msg_write_review, reply_markup=kb.review_btn)
 
-@router_main.message()  # ID ЧАТА
+#хэндлер, который отлавливает сообщения в посту, проверяет является ли коммент отзывом и выдаем баллы
+@router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False, F.reply_to_message.forward_origin.message_id == ID_POST_REVIEW)
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
-    print(message)
+    tg_id = message.from_user.id
+    text = message.text.lower()
+    count_comment_cyberbomb = await get_count_comment_cyberbomb(tg_id)
+    if count_comment_cyberbomb > 0 and check_review(text):
+        await substract_count_comment_cyberbomb(tg_id)
+        api.add_points(tg_id, 40)
+        try:
+            await bot.send_message(tg_id, copy.msg_review_accept)
+        except Exception as e:
+            print(e)
+
+
 
 # ===========================================Комментарии из чата========================================================
 @router_main.channel_post(F.chat.id == ID_CHANNEL)
@@ -627,7 +645,6 @@ async def answer_message(message: types.Message):
     if not message.pinned_message and (message.text or message.caption):
         print("Новый пост")
         add_new_id_post(message.message_id)
-
 
 @router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False)  # ID ЧАТА
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
@@ -645,11 +662,3 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot, ar
             )
     except Exception as e:
        print(e)
-
-# ===========================================Написать отзыв=============================================================
-@router_main.callback_query(F.data == 'review')
-async def answer_message(callback: types.CallbackQuery, state: FSMContext):
-    await callback.message.answer(copy.msg_write_review, reply_markup=kb.review_btn)
-
-
-# #Написать хэндлер, который отлавливает сообщения в посту, проверяет является ли коммент отзывом и выдаем баллы

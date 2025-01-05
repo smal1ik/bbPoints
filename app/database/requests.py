@@ -22,7 +22,7 @@ async def add_user(tg_id: BigInteger, first_name: str, username: str, user_refs:
             first_name = 'None'
         if not username:
             username = 'None'
-        session.add(User(tg_id=tg_id, first_name=first_name, username=username, user_refs=user_refs))
+        session.add(User(tg_id=tg_id, first_name=first_name, username=username, user_refs=user_refs, count_comment_cyberbomb=1))
         session.add(Point(tg_id=tg_id))
         await session.commit()
 
@@ -40,6 +40,11 @@ async def user_send_comment(tg_id: BigInteger):
             send_comment=True, count_comment=result.count_comment + 1)
         )
         await session.commit()
+
+async def get_count_comment_cyberbomb(tg_id: BigInteger):
+    async with async_session() as session:
+        result = await session.scalar(select(User).where(User.tg_id == tg_id))
+    return result.count_comment_cyberbomb
 
 async def add_count_comment_cyberbomb(tg_id: BigInteger, n):
     async with async_session() as session:

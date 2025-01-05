@@ -2,6 +2,11 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram import types
 
 from app.database.requests import get_social_networks
+
+from decouple import config
+
+ID_POST_REVIEW = int(config('ID_POST_REVIEW'))
+
 sn_list = ['Likee', 'TikTok', 'VK']
 
 web_app_info = types.WebAppInfo(url="https://beauty-bomb-app.ru/your-web-app/?action=wptelegram_login_webapp&redirect_to=https://beauty-bomb-app.ru")
@@ -46,7 +51,7 @@ review_btn = InlineKeyboardBuilder()
 review_btn.row(
     types.InlineKeyboardButton(
         text="Кнопка перехода к посту на канале",
-        url=f'https://t.me/channel_smallik1/230')
+        url=f'https://t.me/channel_smallik1/{ID_POST_REVIEW}')
 )
 review_btn.row(
     types.InlineKeyboardButton(
