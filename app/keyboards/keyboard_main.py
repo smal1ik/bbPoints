@@ -46,7 +46,7 @@ review_btn = InlineKeyboardBuilder()
 review_btn.row(
     types.InlineKeyboardButton(
         text="Кнопка перехода к посту на канале",
-        callback_data="write_review")
+        url=f'https://t.me/channel_smallik1/230')
 )
 review_btn.row(
     types.InlineKeyboardButton(
