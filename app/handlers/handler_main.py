@@ -616,6 +616,11 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
     else:
         await bot.send_message(tg_id, copy.msg_photo_link_cancel)
 
+
+@router_main.message()  # ID ЧАТА
+async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
+    print(message)
+
 # ===========================================Комментарии из чата========================================================
 @router_main.channel_post(F.chat.id == ID_CHANNEL)
 async def answer_message(message: types.Message):
@@ -648,6 +653,3 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 
 
 # #Написать хэндлер, который отлавливает сообщения в посту, проверяет является ли коммент отзывом и выдаем баллы
-@router_main.message()  # ID ЧАТА
-async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
-    print(message)
