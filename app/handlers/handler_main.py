@@ -647,4 +647,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(copy.msg_write_review, reply_markup=kb.review_btn)
 
 
-#Написать хэндлер, который отлавливает сообщения в посту, проверяет является ли коммент отзывом и выдаем баллы
+# #Написать хэндлер, который отлавливает сообщения в посту, проверяет является ли коммент отзывом и выдаем баллы
+@router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False)  # ID ЧАТА
+async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
+    print(message)
