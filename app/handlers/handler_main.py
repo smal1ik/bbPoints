@@ -629,7 +629,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot, ar
     tg_id = message.from_user.id
     text = message.text.lower()
     count_comment_cyberbomb = await get_count_comment_cyberbomb(tg_id)
-    if count_comment_cyberbomb > 0 and check_review(text):
+    if count_comment_cyberbomb and count_comment_cyberbomb > 0 and check_review(text):
         await substract_count_comment_cyberbomb(tg_id)
         api.add_points(tg_id, 40)
         try:
