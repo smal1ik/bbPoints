@@ -177,7 +177,6 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 
         if not user:
             await bot.set_chat_menu_button(message.from_user.id, menu_button=kb.web_app_button)
-            await message.answer(copy.start_msg)
             if args and len(args) == 24 and ref == 0:
                 ref = 1
                 api.postback(args)
@@ -186,6 +185,7 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
             await message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
 
         ref = encode_payload(message.from_user.id)
+        await message.answer(copy.start_msg)
         await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref), menu_button=kb.web_app_button)
 
 

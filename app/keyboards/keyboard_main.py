@@ -50,8 +50,8 @@ sure_btn = sure_btn.as_markup()
 review_btn = InlineKeyboardBuilder()
 review_btn.row(
     types.InlineKeyboardButton(
-        text="Кнопка перехода к посту на канале",
-        url=f'https://t.me/channel_smallik1/{ID_POST_REVIEW}')
+        text="Написать отзыв",
+        url=f'https://t.me/beautybomb/{ID_POST_REVIEW}')
 )
 review_btn.row(
     types.InlineKeyboardButton(
@@ -62,8 +62,6 @@ review_btn = review_btn.as_markup()
 
 
 def get_menu_btn(ref: str):
-    text = "%D0%9F%D1%80%D0%B8%D1%81%D0%BE%D0%B5%D0%B4%D0%B8%D0%BD%D1%8F%D0%B9%D1%81%D1%8F%20%D0%B2%20%D0%B1%D0%BE%D1%82%D0%B0"
-    url = f"t.me/smallik1_bot?start={ref}"
     menu_btn = InlineKeyboardBuilder()
     menu_btn.row(
         types.InlineKeyboardButton(
