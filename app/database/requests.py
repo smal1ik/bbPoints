@@ -44,7 +44,9 @@ async def user_send_comment(tg_id: BigInteger):
 async def get_count_comment_cyberbomb(tg_id: BigInteger):
     async with async_session() as session:
         result = await session.scalar(select(User).where(User.tg_id == tg_id))
-    return result.count_comment_cyberbomb
+    if result:
+        return result.count_comment_cyberbomb
+    return None
 
 async def add_count_comment_cyberbomb(tg_id: BigInteger, n):
     async with async_session() as session:
