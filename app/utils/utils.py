@@ -171,6 +171,7 @@ review_pattern = ['отзыв', 'нравится', 'текстура',
                   'рекомендую', 'наносится', 'аромат',
                   'красиво', 'сияет', 'пигментированный']
 def check_review(text):
+    print(text)
     if len(text) < 100:
         return False
     for pattern in review_pattern:
