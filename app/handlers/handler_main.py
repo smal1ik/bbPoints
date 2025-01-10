@@ -163,7 +163,11 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
         args = command.args
         ref = 0
         if args and len(args) != 24:
-            ref = decode_payload(args)
+            try:
+                ref = decode_payload(args)
+            except:
+                print("ref error", message.from_user.id, args)
+                ref = 0
             if ref == str(message.from_user.id):  # Своя же рефка
                 ref = 0
             else:
