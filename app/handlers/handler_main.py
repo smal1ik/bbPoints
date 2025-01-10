@@ -166,7 +166,7 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
             try:
                 ref = decode_payload(args)
             except:
-                await bot.send_message(654557598, f"ref error {message.from_user.id} {args}")
+                await bot.send_message(654557598, f"ref error {message.from_user.id} {args} {len(args)}")
                 ref = 0
             if ref == str(message.from_user.id):  # Своя же рефка
                 ref = 0
