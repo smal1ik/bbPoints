@@ -637,6 +637,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot, ar
     if count_comment_cyberbomb and count_comment_cyberbomb > 0 and check_review(text):
         await substract_count_comment_cyberbomb(tg_id)
         api.add_points(tg_id, 40)
+        await insert_point_log(tg_id, "отзыв", 40)
         try:
             await bot.send_message(tg_id, copy.msg_review_accept)
         except Exception as e:
