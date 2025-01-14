@@ -291,7 +291,7 @@ async def get_analytics():
 
         # Статистика для cyberbomb
         # Количество участвующих пользователей
-        results.append((await session.execute(select(func.count()).where(User.check_activ == True))).scalar() + 3031)
+        results.append((await session.execute(select(func.count()).where(User.check_activ == True))).scalar() + 3531)
         # Количество чеков с новыми позициями
         results.append((await session.execute(select(func.count()).where(Check.count_items_cyberbomb != 0))).scalar() + 125)
         # Количество сделанных фото у стенда
