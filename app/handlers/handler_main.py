@@ -93,6 +93,13 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 {synonyms[stats[9][8][0]]}: {stats[9][8][1]}
 Сумма товаров бб по всем чекам: {stats[10]}
 Сколько баллов в общем засчитали за чеки: {stats[11]}
+
+Статистика для cyberbomb:
+Количество активных пользователей: {stats[12]}
+Количество чеков с новыми позициями: {stats[13]}
+Количество сделанных фото у стенда: {stats[14]}
+Количество отзывов: {stats[15]}
+Количество запусков после обновления: {stats[16]}
 """
     await message.answer(msg)
 
@@ -273,7 +280,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                     api.add_points(message.from_user.id, n_point)
                     await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                     retail_name = get_name_retail(retail_place.lower())
-                    await add_check(id_check, retail_name, sum_bb, n_point)
+                    await add_check(id_check, retail_name, sum_bb, n_point, n_cyberbomb_comments)
                     await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
                     await state.set_state(User.start)
                     ref = encode_payload(message.from_user.id)
@@ -373,7 +380,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                 api.add_points(message.from_user.id, n_point)
                 await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                 retail_name = get_name_retail(retail_place.lower())
-                await add_check(id_check, retail_name, sum_bb, n_point)
+                await add_check(id_check, retail_name, sum_bb, n_point, n_cyberbomb_comments)
                 await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
     await state.set_state(User.start)
     ref = encode_payload(message.from_user.id)
