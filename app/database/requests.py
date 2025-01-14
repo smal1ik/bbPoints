@@ -32,6 +32,7 @@ async def add_user(tg_id: BigInteger, first_name: str, username: str, user_refs:
         if user_refs:
             await api.add_points(user_refs, 20)
             await api.add_points(tg_id, 20)
+            await active_user(user_refs)
             await insert_point_log(user_refs, "рефка", 20)
             await insert_point_log(tg_id, "рефка", 20)
 
