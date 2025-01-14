@@ -277,7 +277,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                     await message.answer("В этом чеке нет товаров от Beauty Bomb 😔 Попробуй прислать другой чек!",
                                          reply_markup=kb.single_menu_btn)
                 else:
-                    api.add_points(message.from_user.id, n_point)
+                    await api.add_points(message.from_user.id, n_point)
                     await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                     retail_name = get_name_retail(retail_place.lower())
                     await add_check(id_check, retail_name, sum_bb, n_point, n_cyberbomb_comments)
@@ -377,7 +377,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                 await message.answer("В этом чеке нет товаров от Beauty Bomb 😔 Попробуй прислать другой чек!",
                                      reply_markup=kb.single_menu_btn)
             else:
-                api.add_points(message.from_user.id, n_point)
+                await api.add_points(message.from_user.id, n_point)
                 await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                 retail_name = get_name_retail(retail_place.lower())
                 await add_check(id_check, retail_name, sum_bb, n_point, n_cyberbomb_comments)
@@ -426,7 +426,7 @@ async def answer_message(message: types.Message, state: FSMContext):
         await message.answer("Поздравляю! Ты заработала свои 20 ВВ-баллов за этот постик 💙")
         await add_post(id_channel, id_post)
         await add_number_post_channel(id_channel)
-        api.add_points(message.from_user.id, 20)
+        await api.add_points(message.from_user.id, 20)
         await insert_point_log(message.from_user.id, "пост", 20, channel_id=id_channel)
 
     await add_count_channel_post(id_channel)
@@ -576,7 +576,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
         msg = f"Молодец! Тебе уже зачислили баллы за этот видосик, можешь проверять 😈"
         await update_number_accept_video(sn)
         await bot.send_message(tg_id, msg)
-        api.add_points(int(tg_id), int(points))
+        await api.add_points(int(tg_id), int(points))
         await insert_point_log(tg_id, "видео", int(points))
 
 # ===========================================Фото у стенда==============================================================
@@ -624,7 +624,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
         msg = "Поздравляю! Этот пост принёс тебе 20 ВВ-баллов 💙"
         await bot.send_message(tg_id, msg)
         tg_id = int(tg_id)
-        api.add_points(tg_id, 20)
+        await api.add_points(tg_id, 20)
         await insert_point_log(tg_id, "фото", 20)
     else:
         await bot.send_message(tg_id, copy.msg_photo_link_cancel)
@@ -643,7 +643,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot, ar
 
     if count_comment_cyberbomb and count_comment_cyberbomb > 0 and check_review(text):
         await substract_count_comment_cyberbomb(tg_id)
-        api.add_points(tg_id, 40)
+        await api.add_points(tg_id, 40)
         await insert_point_log(tg_id, "отзыв", 40)
         try:
             await bot.send_message(tg_id, copy.msg_review_accept)
@@ -667,7 +667,7 @@ async def answer_message(message: types.Message, state: FSMContext, bot: Bot, ar
         if message.reply_to_message.forward_origin and (message.reply_to_message.forward_origin.message_id in list_channel_message) and user and not user.send_comment:
             print(message.reply_to_message.forward_origin.message_id)
             await bot.send_message(message.from_user.id, copy.comment_msg)
-            api.add_points(message.from_user.id, 10)
+            await api.add_points(message.from_user.id, 10)
             await insert_point_log(message.from_user.id, "комментарий", 10)
             await user_send_comment(message.from_user.id)
             await arqredis.enqueue_job(
