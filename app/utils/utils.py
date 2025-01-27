@@ -62,7 +62,8 @@ list_bb_item_check = ['beautybomb', 'bomb', 'beauty bomb', 'hooliguns', 'romcore
 list_cb_item_check = ['cyberbomb', 'cream blush', 'killer roomba', 'contourator', 'xaela ter', 'eyepocalypce',
                       'not found', 'doomsday', '1101001', 'toxic waste', 'overloaded', 'skipidarushka',
                       'dirty lick', 'robochic', 'machine oil', 'heavy water', 'chrome nails', 'eye protector',
-                      'walkie talkie', 'spy drone', 'furiosa']
+                      'walkie talkie', 'spy drone', 'furiosa', '2095000985127', '4670220301858', '4670220301865',
+                      '4680191182141', '4670139331595']
 
 
 def check_items(items):
