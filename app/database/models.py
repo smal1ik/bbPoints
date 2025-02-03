@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Boolean
+from sqlalchemy import BigInteger, Boolean, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
 from decouple import config
@@ -93,6 +93,8 @@ class PointsLog(Base):
 
     channel_id = mapped_column(BigInteger, default=0, nullable=True)
     check_id: Mapped[str] = mapped_column(default='', nullable=True)
+
+    date = mapped_column(DateTime, nullable=True)
 
 async def async_main():
     async with engine.begin() as conn:

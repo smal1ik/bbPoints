@@ -4,12 +4,13 @@ from sqlalchemy import select, BigInteger, update, delete, func
 
 from app.utils import api
 
+from datetime import datetime
 
 async def insert_point_log(tg_id: BigInteger, from_points: str, number_points: int,
                            channel_id: BigInteger = 0, check_id: str = ''):
     async with async_session() as session:
         session.add(PointsLog(tg_id=tg_id, from_points=from_points, number_points=number_points,
-                              channel_id=channel_id, check_id=check_id))
+                              channel_id=channel_id, check_id=check_id, date=datetime.now()))
 
         await session.commit()
 
