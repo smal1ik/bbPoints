@@ -115,6 +115,12 @@ async def cmd_start(message: types.Message, state: FSMContext):
     except:
         await message.answer("Что то не так")
 
+@router_main.message(Command("add_points"))
+async def cmd_message(message: types.Message, state: FSMContext):
+    _, tg_id, points = message.text.split()
+    await api.add_points(tg_id, points)
+    await message.answer(f"Пользователю {tg_id}, было успешно добавлено {points} баллов")
+
 
 @router_main.message(Command('filter_account'))
 async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, command: Command):
@@ -668,10 +674,12 @@ async def answer_message(message: types.Message):
 @router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False)  # ID ЧАТА
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
     try:
-        print(list_channel_message)
+        list_channel_message_id = get_id_posts()
+        print(list_channel_message_id)
         user = await get_user(message.from_user.id)
-        if message.reply_to_message.forward_origin and (message.reply_to_message.forward_origin.message_id in list_channel_message) and user and not user.send_comment:
+        if message.reply_to_message.forward_origin and (message.reply_to_message.forward_origin.message_id in list_channel_message_id) and user and not user.send_comment:
             print(message.reply_to_message.forward_origin.message_id)
+            print(message.from_user.id, message.text)
             await bot.send_message(message.from_user.id, copy.comment_msg)
             await api.add_points(message.from_user.id, 10)
             await active_user(message.from_user.id)
