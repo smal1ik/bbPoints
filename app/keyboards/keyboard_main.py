@@ -68,17 +68,17 @@ def get_menu_btn(ref: str):
             text="Загрузить чек",
             callback_data="receipt")
     )
-    menu_btn.row(
-        types.InlineKeyboardButton(
-            text="Фото у стенда",
-            callback_data="photo_stend"
-        )
-    )
     # menu_btn.row(
     #     types.InlineKeyboardButton(
-    #         text="Проверить упоминание в посте",
-    #         callback_data="mention")
+    #         text="Фото у стенда",
+    #         callback_data="photo_stend"
+    #     )
     # )
+    menu_btn.row(
+        types.InlineKeyboardButton(
+            text="Проверить упоминание в посте",
+            callback_data="mention")
+    )
     menu_btn.row(
         types.InlineKeyboardButton(
             text="Конкурс #BBCore",
@@ -89,11 +89,11 @@ def get_menu_btn(ref: str):
             text="Поделиться ботом",
             callback_data="share")
     )
-    menu_btn.row(
-        types.InlineKeyboardButton(
-            text="Написать отзыв",
-            callback_data="review")
-    )
+    # menu_btn.row(
+    #     types.InlineKeyboardButton(
+    #         text="Написать отзыв",
+    #         callback_data="review")
+    # )
     menu_btn = menu_btn.as_markup()
     return menu_btn
 

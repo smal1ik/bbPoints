@@ -70,58 +70,43 @@ list_cb_item_check = ['cyberbomb', 'cream blush', 'killer roomba', 'contourator'
 
 def check_items(items):
     res_sum = 0
-    cyberbomb_sum = 0
-    n_cyberbomb_items = 0
+    n_bbomb_items = 0
     points = 0
     for item in items:
-        flag = False
         text = item['name'].lower()
         price = int(item['price'])
-
-        for item_split in text.split():
-            if item_split in list_cb_item_check:
-                cyberbomb_sum += price
-                n_cyberbomb_items += 1
-                flag = True
-                break
-        if flag: continue
-
-        for elem in list_cb_item_check:
-            if elem in text:
-                cyberbomb_sum += price
-                n_cyberbomb_items += 1
-                flag = True
-                break
-        if flag: continue
+        flag = False
 
         for item_split in text.split():
             if item_split in list_bb_item_check:
                 res_sum += price
                 flag = True
                 break
-        if flag: continue
+
+        if flag:
+            continue
 
         for elem in list_bb_item_check:
             if elem in text:
                 res_sum += price
                 break
 
-    flag = True
-    if cyberbomb_sum >= 500000:
-        points += 4000
-    elif cyberbomb_sum >= 300000:
-        points += 2000
-    elif cyberbomb_sum >= 150000:
-        points += 800
-    elif cyberbomb_sum >= 80000:
-        points += 600
-    elif cyberbomb_sum >= 50000:
-        points += 400
-    elif cyberbomb_sum >= 30000:
-        points += 200
-    else:
-        res_sum += cyberbomb_sum
-        flag = False
+    # flag = True
+    # if cyberbomb_sum >= 500000:
+    #     points += 4000
+    # elif cyberbomb_sum >= 300000:
+    #     points += 2000
+    # elif cyberbomb_sum >= 150000:
+    #     points += 800
+    # elif cyberbomb_sum >= 80000:
+    #     points += 600
+    # elif cyberbomb_sum >= 50000:
+    #     points += 400
+    # elif cyberbomb_sum >= 30000:
+    #     points += 200
+    # else:
+    #     res_sum += cyberbomb_sum
+    #     flag = False
 
     if res_sum >= 500000:
         points += 1500
@@ -136,10 +121,10 @@ def check_items(items):
     elif res_sum >= 30000:
         points += 50
     if points == 0:
-        return None, None, n_cyberbomb_items
-    if flag:
-        res_sum += cyberbomb_sum
-    return points, res_sum / 100, n_cyberbomb_items
+        return None, None, n_bbomb_items
+    # if flag:
+    #     res_sum += cyberbomb_sum
+    return points, res_sum / 100, n_bbomb_items
 
 
 retail_names = {

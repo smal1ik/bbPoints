@@ -275,9 +275,9 @@ async def answer_message(message: types.Message, state: FSMContext):
                 await message.answer("Ох, кажется, очень много запросов на проверки чеки!\n\nСегодня мы не можем принять твой чек, попробуй отправить его завтра 🫶",
                                      reply_markup=kb.single_menu_btn)
             else:
-                n_point, sum_bb, n_cyberbomb_comments = check_items(items)
-                if n_cyberbomb_comments != 0:
-                    await add_count_comment_cyberbomb(message.from_user.id, n_cyberbomb_comments)
+                n_point, sum_bb, n_bbomb_comments = check_items(items)
+                # if n_cyberbomb_comments != 0:
+                #     await add_count_comment_cyberbomb(message.from_user.id, n_cyberbomb_comments)
                 if n_point is None:
                     await add_check(id_check)
                     await message.answer("В этом чеке нет товаров от Beauty Bomb 😔 Попробуй прислать другой чек!",
@@ -287,7 +287,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                     await active_user(message.from_user.id)
                     await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                     retail_name = get_name_retail(retail_place.lower())
-                    await add_check(id_check, retail_name, sum_bb, n_point, n_cyberbomb_comments)
+                    await add_check(id_check, retail_name, sum_bb, n_point, n_bbomb_comments)
                     await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
                     await state.set_state(User.start)
                     ref = encode_payload(message.from_user.id)
@@ -376,9 +376,9 @@ async def answer_message(message: types.Message, state: FSMContext):
             await message.answer("Мнe не удалось найти чек, возможно была допущена ошибка 🔍",
                                  reply_markup=kb.single_menu_btn)
         else:
-            n_point, sum_bb, n_cyberbomb_comments = check_items(items)
-            if n_cyberbomb_comments != 0:
-                await add_count_comment_cyberbomb(message.from_user.id, n_cyberbomb_comments)
+            n_point, sum_bb, n_bbomb_comments = check_items(items)
+            # if n_cyberbomb_comments != 0:
+            #     await add_count_comment_cyberbomb(message.from_user.id, n_cyberbomb_comments)
             if n_point is None:
                 await add_check(id_check)
                 await message.answer("В этом чеке нет товаров от Beauty Bomb 😔 Попробуй прислать другой чек!",
@@ -388,7 +388,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                 await active_user(message.from_user.id)
                 await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                 retail_name = get_name_retail(retail_place.lower())
-                await add_check(id_check, retail_name, sum_bb, n_point, n_cyberbomb_comments)
+                await add_check(id_check, retail_name, sum_bb, n_point, n_bbomb_comments)
                 await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
     await state.set_state(User.start)
     ref = encode_payload(message.from_user.id)
@@ -646,21 +646,21 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(copy.msg_write_review, reply_markup=kb.review_btn)
 
 #хэндлер, который отлавливает сообщения в посту, проверяет является ли коммент отзывом и выдаем баллы
-@router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False, F.reply_to_message.forward_origin.message_id == ID_POST_REVIEW)
-async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
-    tg_id = message.from_user.id
-    text = message.text.lower()
-    count_comment_cyberbomb = await get_count_comment_cyberbomb(tg_id)
-
-    if count_comment_cyberbomb and count_comment_cyberbomb > 0 and check_review(text):
-        await substract_count_comment_cyberbomb(tg_id)
-        await api.add_points(tg_id, 40)
-        await active_user(tg_id)
-        await insert_point_log(tg_id, "отзыв", 40)
-        try:
-            await bot.send_message(tg_id, copy.msg_review_accept)
-        except Exception as e:
-            print(e)
+# @router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False, F.reply_to_message.forward_origin.message_id == ID_POST_REVIEW)
+# async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
+#     tg_id = message.from_user.id
+#     text = message.text.lower()
+#     count_comment_cyberbomb = await get_count_comment_cyberbomb(tg_id)
+#
+#     if count_comment_cyberbomb and count_comment_cyberbomb > 0 and check_review(text):
+#         await substract_count_comment_cyberbomb(tg_id)
+#         await api.add_points(tg_id, 40)
+#         await active_user(tg_id)
+#         await insert_point_log(tg_id, "отзыв", 40)
+#         try:
+#             await bot.send_message(tg_id, copy.msg_review_accept)
+#         except Exception as e:
+#             print(e)
 
 
 
