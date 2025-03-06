@@ -140,15 +140,15 @@ async def message(message: types.Message, state: FSMContext, bot: Bot, command: 
 
 @router_main.message(Command("get_id_video_note"))
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
-    await bot.send_message("Отправляй кружок")
+    await message.answer("Отправляй кружок")
     await state.set_state(User.id_video_note)
 
 @router_main.message(User.id_video_note)
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
     try:
-        await bot.send_message(message.video_note.file_id)
+        await message.answer(message.video_note.file_id)
     except:
-        await bot.send_message("Это не кружок, можно или записать или поделиться кружком")
+        await message.answer("Это не кружок, можно или записать или поделиться кружком")
     await state.set_state(User.start)
 
 @router_main.message(User.admin)
