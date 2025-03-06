@@ -15,4 +15,5 @@ class User(StatesGroup):
     admin = State()
     admin_new_posts = State()
     user_wait_link_photo = State()
+    id_video_note = State()
     end = State()
