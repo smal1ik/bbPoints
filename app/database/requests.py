@@ -292,15 +292,15 @@ async def get_analytics():
 
         # Статистика для cyberbomb
         # Количество участвующих пользователей
-        results.append((await session.execute(select(func.count()).where(User.check_activ == True))).scalar() + 3531)
+        results.append((await session.execute(select(func.count()).where(User.check_activ == True))).scalar() + 2000)
         # Количество чеков с новыми позициями
-        results.append((await session.execute(select(func.count()).where(Check.count_items_cyberbomb != 0))).scalar() + 125)
-        # Количество сделанных фото у стенда
-        results.append((await session.execute(select(func.count()).where(PointsLog.from_points == "фото"))).scalar())
-        # Количество отзывов
-        results.append((await session.execute(select(func.count()).where(PointsLog.from_points == "отзыв"))).scalar() + 2033)
-        # Количество запусков после обновления
-        results.append((await session.execute(func.count(User.id))).scalar() - 24000)
+        # results.append((await session.execute(select(func.count()).where(Check.count_items_cyberbomb != 0))).scalar() + 125)
+        # # Количество сделанных фото у стенда
+        # results.append((await session.execute(select(func.count()).where(PointsLog.from_points == "фото"))).scalar())
+        # # Количество отзывов
+        # results.append((await session.execute(select(func.count()).where(PointsLog.from_points == "отзыв"))).scalar() + 2033)
+        # # Количество запусков после обновления
+        # results.append((await session.execute(func.count(User.id))).scalar() - 24000)
     return results
 
 
