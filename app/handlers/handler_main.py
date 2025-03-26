@@ -667,7 +667,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
 # ===========================================Комментарии из чата========================================================
 @router_main.channel_post(F.chat.id == ID_CHANNEL)
 async def answer_message(message: types.Message):
-    if not message.pinned_message and (message.text or message.caption):
+    if not message.pinned_message and (message.text or message.caption or message.poll or message.video_note):
         print("Новый пост")
         add_new_id_post(message.message_id)
 
