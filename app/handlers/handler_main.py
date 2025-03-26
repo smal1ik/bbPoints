@@ -94,12 +94,7 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 Сумма товаров бб по всем чекам: {stats[10]}
 Сколько баллов в общем засчитали за чеки: {stats[11]}
 
-Статистика для cyberbomb:
 Количество активных пользователей: {stats[12]}
-Количество чеков с новыми позициями: {stats[13]}
-Количество сделанных фото у стенда: {stats[14]}
-Количество отзывов: {stats[15]}
-Количество запусков после обновления: {stats[16]}
 """
     await message.answer(msg)
 
@@ -138,6 +133,18 @@ async def message(message: types.Message, state: FSMContext, bot: Bot, command: 
     await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref))
     await state.set_state(User.start)
 
+@router_main.message(Command("get_id_video_note"))
+async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
+    await message.answer("Отправляй кружок")
+    await state.set_state(User.id_video_note)
+
+@router_main.message(User.id_video_note)
+async def answer_message(message: types.Message, state: FSMContext, bot: Bot):
+    try:
+        await message.answer(message.video_note.file_id)
+    except:
+        await message.answer("Это не кружок, можно или записать или поделиться кружком")
+    await state.set_state(User.start)
 
 @router_main.message(User.admin)
 async def answer_message(message: types.Message, state: FSMContext):
