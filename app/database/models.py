@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_
 from decouple import config
 from app.utils.state import User
 
-engine = create_async_engine(config('POSTGRESQL'), echo=False)
+engine = create_async_engine(config('POSTGRESQL'), echo=False, pool_size=50, max_overflow=200)
 async_session = async_sessionmaker(engine)
 
 
