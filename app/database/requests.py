@@ -2,8 +2,6 @@ from app.database.models import User, async_session, Point, SocialNetwork, Check
     NumberAcceptVideo, PointsLog, LinkPhoto
 from sqlalchemy import select, BigInteger, update, delete, func
 
-from app.utils import api
-
 from datetime import datetime
 
 async def insert_point_log(tg_id: BigInteger, from_points: str, number_points: int,
