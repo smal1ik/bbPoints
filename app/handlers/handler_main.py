@@ -214,7 +214,7 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
         await callback.message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
     else:
         if ref and ref != str(callback.from_user.id) and (await get_user(ref)):
-            await api.add_refs(callback.from_user.id, ref)
+            await api.add_refs(int(callback.from_user.id), int(ref))
         else:
             ref = 0
         await add_user(callback.from_user.id, callback.from_user.first_name, callback.from_user.username, int(ref))
