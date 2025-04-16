@@ -210,9 +210,8 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
     _, _, ref = callback.data.split('_')
     user = await get_user(callback.from_user.id)
-
     if user:
-        await message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
+        await callback.message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
     else:
         if ref and ref != str(callback.from_user.id) and (await get_user(ref)):
             await api.add_refs(callback.from_user.id, ref)
@@ -221,8 +220,8 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: 
         await add_user(callback.from_user.id, callback.from_user.first_name, callback.from_user.username, int(ref))
 
     ref = encode_payload(callback.from_user.id)
-    await message.answer(copy.start_msg)
-    await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref), menu_button=kb.web_app_button)
+    await callback.message.answer(copy.start_msg)
+    await callback.message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref), menu_button=kb.web_app_button)
 
 
 
