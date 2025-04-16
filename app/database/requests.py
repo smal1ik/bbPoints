@@ -25,6 +25,7 @@ async def add_user(tg_id: BigInteger, first_name: str, username: str, user_refs:
         session.add(
             User(tg_id=tg_id, first_name=first_name, username=username, user_refs=user_refs, count_comment_cyberbomb=1))
         await session.commit()
+        await active_user(user_refs)
 
 
 async def active_user(tg_id: BigInteger):
