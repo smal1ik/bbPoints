@@ -28,13 +28,6 @@ async def add_user(tg_id: BigInteger, first_name: str, username: str, user_refs:
             User(tg_id=tg_id, first_name=first_name, username=username, user_refs=user_refs, count_comment_cyberbomb=1))
         await session.commit()
 
-        # ПОМЕНЯТЬ НА АПИ ОТ ВОЛОДИ
-        if user_refs:
-            await api.add_points(user_refs, 20)
-            await api.add_points(tg_id, 20)
-            await active_user(user_refs)
-            await insert_point_log(user_refs, "рефка", 20)
-            await insert_point_log(tg_id, "рефка", 20)
 
 async def active_user(tg_id: BigInteger):
     async with async_session() as session:

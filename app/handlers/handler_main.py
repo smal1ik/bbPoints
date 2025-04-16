@@ -181,36 +181,48 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
     if message.from_user.id == message.chat.id:
         await state.set_state(User.start)
         args = command.args
-        ref = 0
+
         if args and len(args) != 24:
             try:
                 ref = decode_payload(args)
             except:
                 await bot.send_message(654557598, f"ref error {message.from_user.id} {args} {len(args)}")
                 ref = 0
-            if ref == str(message.from_user.id):  # Своя же рефка
-                ref = 0
-            else:
-                user_refs = await get_user(ref)  # Есть ли вообще в бд такой пользователь для рефки
-                if not user_refs:
-                    ref = 0
+            await message.answer(copy.check_robot_msg, reply_markup=kb.get_check_robot_btn(ref))
         else:
             ref = 0
+            user = await get_user(message.from_user.id)
+            if not user:
+                if args and len(args) == 24:
+                    api.postback(args)
+                    ref = 1
+                await add_user(message.from_user.id, message.from_user.first_name, message.from_user.username, ref)
+                await bot.set_chat_menu_button(message.from_user.id, menu_button=kb.web_app_button)
+            ref = encode_payload(message.from_user.id)
+            await message.answer(copy.start_msg)
+            await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref), menu_button=kb.web_app_button)
 
-        user = await get_user(message.from_user.id)
 
-        if not user:
-            await bot.set_chat_menu_button(message.from_user.id, menu_button=kb.web_app_button)
-            if args and len(args) == 24 and ref == 0:
-                ref = 1
-                api.postback(args)
-            await add_user(message.from_user.id, message.from_user.first_name, message.from_user.username, int(ref))
-        elif ref:
-            await message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
 
-        ref = encode_payload(message.from_user.id)
-        await message.answer(copy.start_msg)
-        await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref), menu_button=kb.web_app_button)
+@router_main.callback_query(F.data.contains('not_robot'))
+async def answer_message(callback: types.CallbackQuery, state: FSMContext, bot: Bot):
+    _, _, ref = callback.data.split('_')
+    user = await get_user(callback.from_user.id)
+
+    if user:
+        await message.answer("Не могу начислить ВВ-баллы за твой переход по ссылке, так как бот уже был запущен тобой ранее 🔗")
+    else:
+        if ref and ref != str(callback.from_user.id) and (await get_user(ref)):
+            await api.add_refs(callback.from_user.id, ref)
+        else:
+            ref = 0
+        await add_user(callback.from_user.id, callback.from_user.first_name, callback.from_user.username, int(ref))
+
+    ref = encode_payload(callback.from_user.id)
+    await message.answer(copy.start_msg)
+    await message.answer(copy.menu_msg, reply_markup=kb.get_menu_btn(ref), menu_button=kb.web_app_button)
+
+
 
 
 @router_main.callback_query(F.data == 'new_start')

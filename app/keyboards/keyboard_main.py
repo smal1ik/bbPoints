@@ -193,3 +193,14 @@ def get_points_btn(tg_id: int, sn: str):
     )
     points_btn = points_btn.as_markup()
     return points_btn
+
+
+def get_check_robot_btn(ref):
+    check_robot_btn = InlineKeyboardBuilder()
+    check_robot_btn.row(
+        types.InlineKeyboardButton(
+            text="Я не робот",
+            callback_data=f"not_robot_{ref}")
+    )
+    check_robot_btn = check_robot_btn.as_markup()
+    return check_robot_btn
