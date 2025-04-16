@@ -106,8 +106,7 @@ async def cmd_start(message: types.Message, state: FSMContext, bot: Bot):
     try:
         _, user_id = message.text.split()
         await bot.set_chat_menu_button(
-            chat_id=user_id,
-            menu_button=MenuButtonDefault()  # Устанавливает дефолтную кнопку (без кастомного меню)
+            chat_id=user_id
         )
     except:
         await message.answer("Что то не так")
