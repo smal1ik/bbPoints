@@ -3,7 +3,7 @@ from datetime import timedelta, datetime
 from aiogram.filters.command import Command
 from aiogram import types, F, Router, Bot, BaseMiddleware
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InputFile, FSInputFile
+from aiogram.types import InputFile, FSInputFile, MenuButtonDefault
 from aiogram.utils.deep_linking import create_start_link, decode_payload, encode_payload
 from arq import ArqRedis
 
@@ -99,6 +99,18 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 Количество активных пользователей: {stats[12]}
 """
     await message.answer(msg)
+
+
+@router_main.message(Command("ban"))
+async def cmd_start(message: types.Message, state: FSMContext, bot: Bot):
+    try:
+        _, user_id = message.text.split()
+        await bot.set_chat_menu_button(
+            chat_id=user_id,
+            menu_button=MenuButtonDefault()  # Устанавливает дефолтную кнопку (без кастомного меню)
+        )
+    except:
+        await message.answer("Что то не так")
 
 @router_main.message(Command("info_user"))
 async def cmd_start(message: types.Message, state: FSMContext):
