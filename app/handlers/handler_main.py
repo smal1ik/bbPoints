@@ -16,6 +16,8 @@ from app.fns import fns_api
 from app.utils import copy
 from app.utils.state import User
 from app.utils.utils import *
+from app.utils import api
+
 import app.keyboards.keyboard_main as kb
 from decouple import config
 
