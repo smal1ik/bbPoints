@@ -60,6 +60,7 @@ def add_new_id_post(id_post: int):
         file.write(" ".join(str(x) for x in list_channel_message))
         file.close()
 
+list_rolton_item_check = ['роллтон', 'rolton', 'лапша роллтон', 'лапша роллтон beauty bomb мохито', 'мохито']
 list_bb_item_check = ['beautybomb', 'bomb', 'beauty bomb', 'hooliguns', 'romcore', 'romecore']
 list_cb_item_check = ['cyberbomb', 'cream blush', 'killer roomba', 'contourator', 'xaela ter', 'eyepocalypce',
                       'not found', 'doomsday', '1101001', 'toxic waste', 'overloaded', 'skipidarushka',
@@ -72,12 +73,18 @@ def check_items(items):
     res_sum = 0
     n_bbomb_items = 0
     points = 0
+    rolton_check = False
     for item in items:
         text = item['name'].lower()
         price = int(item['price'])
         flag = False
 
         for item_split in text.split():
+            if item_split in list_rolton_item_check:
+                rolton_check = True
+                res_sum += price
+                flag = True
+                break
             if item_split in list_bb_item_check:
                 res_sum += price
                 flag = True
@@ -85,6 +92,11 @@ def check_items(items):
 
         if flag:
             continue
+
+        for elem in list_rolton_item_check:
+            if elem in text:
+                rolton_check = True
+                break
 
         for elem in list_bb_item_check:
             if elem in text:
@@ -121,10 +133,10 @@ def check_items(items):
     elif res_sum >= 30000:
         points += 50
     if points == 0:
-        return None, None, n_bbomb_items
+        return None, None, n_bbomb_items, rolton_check
     # if flag:
     #     res_sum += cyberbomb_sum
-    return points, res_sum / 100, n_bbomb_items
+    return points, res_sum / 100, n_bbomb_items, rolton_check
 
 
 retail_names = {
@@ -153,11 +165,91 @@ def filter_link_photo(link):
     return False
 
 
-review_pattern = ['отзыв', 'нравится', 'текстура',
-                  'запах', 'дизайн', 'упаковка',
-                  'крутой', 'цвет', 'состав',
-                  'рекомендую', 'наносится', 'аромат',
-                  'красиво', 'сияет', 'пигментированный']
+review_pattern = [
+    # Румяна
+    "румяна", "румяна party starter", "румяна party start", "party starter",
+    "румяна “party starter”", "румяшки", "румяна пати стартэр", "румяна пати стартер",
+    "пати стартер", "пати стартэр", "патистартер", "патистартэр", "partystarter",
+    "фиолетовые румяна", "сиреневые румяна", "сияющие румяна", "оранжевые румяна",
+
+    # Хайлайтер
+    "хайлайтер", "хайлайтеры", "соль перец", "рассыпчатый хайлайтер", "розовый хайлайтер",
+    "salt&peper", "salt pepper", "salt&pepper", "хайлайтер соль перец", "хайлайтер соль и перец",
+
+    # Тинт
+    "тинт", "тинты", "тинт соус", "красный тинт", "тинт курица", "тинт корова",
+    "тинт липи соус", "tint", "tint lippie souse", "lippie souse", "коричневый тинт",
+
+    # Консилер
+    "консилер", "консилер замазик", "замазик", "консилеры", "consealer", "consealer zamazik", "zamazik",
+
+    # Тональный крем
+    "тональный крем", "тональный", "тоналка", "тон", "тон пюрешка", "пюрешка",
+    "пюре", "тон пюре", "mashed", "mashed foundation", "мэшд", "мэшд фоундейшн",
+
+    # Пудра
+    "пудра", "матовая пудра", "фиксирующая пудра", "пудра лапша", "лапшичная пудра",
+    "powder", "matte powder", "noodlicious", "пудра noodlicious", "noodlicious powder",
+    "матирующая пудра", "нудлишес", "пудра нудлишес",
+
+    # Карандаш для глаз
+    "карандаш", "карандаши", "карандаш для глаз", "карандаши для глаз",
+    "бьюти рецепт", "карандаши бьюти рецепт", "сияющие карандаши", "цветные карандаши",
+    "pencil", "eye pencil", "beauty recipes", "beauty recipe", "beauty recipe pencil",
+
+    # Карандаш для бровей
+    "карандаш", "карандаш для бровей", "карандаши палочки", "browstick", "brow stick",
+    "карандаш browstick", "карандаш brow stick",
+
+    # Плампер для губ
+    "плампер", "пламперы", "плампер для губ", "пламперы для губ", "острый плампер",
+    "шрирача пламп", "шрирача", "срирача", "sriracha plump", "sriracha", "блестящий плампер",
+    "коричневый плампер", "spicy plump", "plumper", "спайси плампер",
+
+    # Bath bomb
+    "bath bomb", "bomb bath", "bath bomb ramen", "bath bomb ramen bath", "ramen bath",
+    "бомбочка", "бомбочка для ванны", "бомбочка для ванны рамен", "бомбочка рамен",
+    "бомбочка лапша", "бомбочка для ванны лапша", "бомбочка ролтон", "бомбочка для ванны роллтон",
+    "бомбочка роллтон", "бомбочка для ванны ролтон", "желтая бомбочка",
+
+    # Соль для ванны
+    "salt", "bath salt", "salt bath", "salt spicy pumpkin & basil", "bath salt spicy pumpkin & basil",
+    "salt spicy pumpkin", "salt pumpkin & basil", "spicy pumpkin & basil", "salt spicy pumpkin basil",
+    "spicy pumpkin basil", "bath salt rosemary & black pepper", "bath salt rosemary black pepper",
+    "salt rosemary & black pepper", "bath salt rosemary black pepper", "salt rosemary", "salt black pepper",
+    "соль", "соль для ванны", "соль для душа", "соль с тыквой", "соль тыква", "соль с тыковкой",
+    "соль с тыквой и базиликом", "соль для ванны тыква", "соль для ванны тыква базилик",
+    "соль для ванны базилик", "соль тыква", "соль тыква базилик", "соль базилик", "соль с розмарином",
+    "соль для ванны с розмарином и перцем", "соль с розмарином и перцем", "розмарин черный перец",
+    "соль с перцем", "соль с черным перцем",
+
+    # Маски для лица
+    "маска", "масочка", "маски", "масочки", "маска для лица", "масочка для лица",
+    "маска с тыквой", "маска для лица с тыквой", "энзимная маска", "энзимная маска с тыквой",
+    "тыквенная маска", "жидкая маска", "глоуинг кари", "гловинг кари", "face mask", "glowing curry",
+    "энзимы тыквы", "экстракт томата", "томатная маска", "маска с томатом", "маска с помидором",
+    "помидор маска", "тканевая маска", "тканевая масочка", "тканевая маска для лица",
+    "тканевая маска для лица с помидором", "rollton glaze", "rolton glaze",
+
+    # Кремы для рук
+    "крем", "крем для рук", "кремы", "кремы для рук", "крем с курицей", "крем с курочкой",
+    "крем с креветкой", "крем с креветками", "hand cream", "hand cream moisturising",
+    "herbal shrimp", "крем herbal shrimp", "sos repair", "крем sos repair", "spicy chicken",
+    "крем spicy chicken",
+
+    # Масло/гель для душа
+    "shower oil", "shower gel", "avocado oil", "shower oil avocado", "shower oil avocado & sea salt",
+    "масло", "масло для душа", "гель для душа", "масло с авокадо", "гель с авокадо",
+    "масло с авокадо и морской солью",
+
+    # Палетки
+    'Палетка "Rollton"', "палетка rollton", "палетка роллтон", "роллтон", "палетка",
+    "палеточка", "цветная палетка", "новая палетка", "яркая палетка",
+
+    'отзыв', 'нравится', 'текстура', 'запах', 'дизайн', 'упаковка',
+    'крутой', 'цвет', 'состав', 'рекомендую', 'наносится', 'аромат',
+    'красиво', 'сияет', 'пигментированный']
+
 def check_review(text):
     if len(text) < 100:
         return False

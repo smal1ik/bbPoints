@@ -94,6 +94,11 @@ def get_menu_btn(ref: str):
     #         text="Написать отзыв",
     #         callback_data="review")
     # )
+    menu_btn.row(
+        types.InlineKeyboardButton(
+            text="Написать отзыв",
+            url=f'https://t.me/beautybomb/{ID_POST_REVIEW}')
+    )
     menu_btn = menu_btn.as_markup()
     return menu_btn
 

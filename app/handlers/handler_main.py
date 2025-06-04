@@ -97,6 +97,8 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 Сколько баллов в общем засчитали за чеки: {stats[11]}
 
 Количество активных пользователей: {stats[12]}
+
+Чеков загрузили с лапшой: {stats[13]}
 """
     await message.answer(msg)
 
@@ -306,7 +308,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                 await message.answer("Ох, кажется, очень много запросов на проверки чеки!\n\nСегодня мы не можем принять твой чек, попробуй отправить его завтра 🫶",
                                      reply_markup=kb.single_menu_btn)
             else:
-                n_point, sum_bb, n_bbomb_comments = check_items(items)
+                n_point, sum_bb, n_bbomb_comments, rolton_check = check_items(items)
                 # if n_cyberbomb_comments != 0:
                 #     await add_count_comment_cyberbomb(message.from_user.id, n_cyberbomb_comments)
                 if n_point is None:
@@ -314,9 +316,13 @@ async def answer_message(message: types.Message, state: FSMContext):
                     await message.answer("В этом чеке нет товаров от Beauty Bomb 😔 Попробуй прислать другой чек!",
                                          reply_markup=kb.single_menu_btn)
                 else:
-                    await api.add_points(message.from_user.id, n_point)
+                    if rolton_check:
+                        await api.add_points(message.from_user.id, n_point, 4)
+                        await insert_point_log(message.from_user.id, "ролтон", n_point, check_id=id_check)
+                    else:
+                        await api.add_points(message.from_user.id, n_point)
+                        await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                     await active_user(message.from_user.id)
-                    await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                     retail_name = get_name_retail(retail_place.lower())
                     await add_check(id_check, retail_name, sum_bb, n_point, n_bbomb_comments)
                     await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
@@ -407,7 +413,7 @@ async def answer_message(message: types.Message, state: FSMContext):
             await message.answer("Мнe не удалось найти чек, возможно была допущена ошибка 🔍",
                                  reply_markup=kb.single_menu_btn)
         else:
-            n_point, sum_bb, n_bbomb_comments = check_items(items)
+            n_point, sum_bb, n_bbomb_comments, rolton_check = check_items(items)
             # if n_cyberbomb_comments != 0:
             #     await add_count_comment_cyberbomb(message.from_user.id, n_cyberbomb_comments)
             if n_point is None:
@@ -415,7 +421,12 @@ async def answer_message(message: types.Message, state: FSMContext):
                 await message.answer("В этом чеке нет товаров от Beauty Bomb 😔 Попробуй прислать другой чек!",
                                      reply_markup=kb.single_menu_btn)
             else:
-                await api.add_points(message.from_user.id, n_point)
+                if rolton_check:
+                    await api.add_points(message.from_user.id, n_point, 4)
+                    await insert_point_log(message.from_user.id, "ролтон", n_point, check_id=id_check)
+                else:
+                    await api.add_points(message.from_user.id, n_point)
+                    await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                 await active_user(message.from_user.id)
                 await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                 retail_name = get_name_retail(retail_place.lower())
@@ -465,7 +476,7 @@ async def answer_message(message: types.Message, state: FSMContext):
         await message.answer("Поздравляю! Ты заработала свои 20 ВВ-баллов за этот постик 💙")
         await add_post(id_channel, id_post)
         await add_number_post_channel(id_channel)
-        await api.add_points(message.from_user.id, 20)
+        await api.add_points(message.from_user.id, 20, 5)
         await active_user(message.from_user.id)
         await insert_point_log(message.from_user.id, "пост", 20, channel_id=id_channel)
 
@@ -677,21 +688,19 @@ async def answer_message(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer(copy.msg_write_review, reply_markup=kb.review_btn)
 
 #хэндлер, который отлавливает сообщения в посту, проверяет является ли коммент отзывом и выдаем баллы
-# @router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False, F.reply_to_message.forward_origin.message_id == ID_POST_REVIEW)
-# async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
-#     tg_id = message.from_user.id
-#     text = message.text.lower()
-#     count_comment_cyberbomb = await get_count_comment_cyberbomb(tg_id)
-#
-#     if count_comment_cyberbomb and count_comment_cyberbomb > 0 and check_review(text):
-#         await substract_count_comment_cyberbomb(tg_id)
-#         await api.add_points(tg_id, 40)
-#         await active_user(tg_id)
-#         await insert_point_log(tg_id, "отзыв", 40)
-#         try:
-#             await bot.send_message(tg_id, copy.msg_review_accept)
-#         except Exception as e:
-#             print(e)
+@router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False, F.reply_to_message.forward_origin.message_id == ID_POST_REVIEW)
+async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
+    tg_id = message.from_user.id
+    text = message.text.lower()
+    current_daily = await get_current_daily_quests()
+    if check_review(text) and current_daily and current_daily.type_quest == 2 and not (await get_user(tg_id)).daily_check:
+        await api.add_points(tg_id, 0, 2)
+        await active_user(tg_id)
+        await insert_point_log(tg_id, "отзыв", 100)
+        try:
+            await bot.send_message(tg_id, copy.msg_review_accept)
+        except Exception as e:
+            print(e)
 
 
 
@@ -704,20 +713,17 @@ async def answer_message(message: types.Message):
 
 @router_main.message(F.chat.id == ID_CHAT, F.text, F.reply_to_message, F.from_user.is_bot == False)  # ID ЧАТА
 async def answer_message(message: types.Message, state: FSMContext, bot: Bot, arqredis: ArqRedis):
-    try:
-        list_channel_message_id = get_id_posts()
-        print(list_channel_message_id)
-        user = await get_user(message.from_user.id)
-        if message.reply_to_message.forward_origin and (message.reply_to_message.forward_origin.message_id in list_channel_message_id) and user and not user.send_comment:
-            print(message.reply_to_message.forward_origin.message_id)
-            print(message.from_user.id, message.text)
-            await bot.send_message(message.from_user.id, copy.comment_msg)
-            await api.add_points(message.from_user.id, 10)
-            await active_user(message.from_user.id)
-            await insert_point_log(message.from_user.id, "комментарий", 10)
-            await user_send_comment(message.from_user.id)
-            await arqredis.enqueue_job(
-                'reset_send_comment', _defer_by=timedelta(hours=1), telegram_id=message.from_user.id
-            )
-    except Exception as e:
-       print(e)
+    list_channel_message_id = get_id_posts()
+    print(list_channel_message_id)
+    user = await get_user(message.from_user.id)
+    if message.reply_to_message.forward_origin and (message.reply_to_message.forward_origin.message_id in list_channel_message_id) and user and not user.send_comment:
+        print(message.reply_to_message.forward_origin.message_id)
+        print(message.from_user.id, message.text)
+        await bot.send_message(message.from_user.id, copy.comment_msg)
+        await api.add_points(message.from_user.id, 10, 1)
+        await active_user(message.from_user.id)
+        await insert_point_log(message.from_user.id, "комментарий", 10)
+        await user_send_comment(message.from_user.id)
+        await arqredis.enqueue_job(
+            'reset_send_comment', _defer_by=timedelta(hours=1), telegram_id=message.from_user.id
+        )

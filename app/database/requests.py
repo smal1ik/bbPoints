@@ -1,8 +1,8 @@
 from app.database.models import User, async_session, Point, SocialNetwork, Check, Channel, Post, LinkVideo, \
-    NumberAcceptVideo, PointsLog, LinkPhoto
+    NumberAcceptVideo, PointsLog, LinkPhoto, DailyQuests
 from sqlalchemy import select, BigInteger, update, delete, func
 
-from datetime import datetime
+from datetime import datetime, date
 
 async def insert_point_log(tg_id: BigInteger, from_points: str, number_points: int,
                            channel_id: BigInteger = 0, check_id: str = ''):
@@ -283,7 +283,7 @@ async def get_analytics():
 
         # Статистика для cyberbomb
         # Количество участвующих пользователей
-        results.append((await session.execute(select(func.count()).where(User.check_activ == True))).scalar() + 2000)
+        results.append((await session.execute(select(func.count()).where(User.check_activ == True))).scalar())
         # Количество чеков с новыми позициями
         # results.append((await session.execute(select(func.count()).where(Check.count_items_cyberbomb != 0))).scalar() + 125)
         # # Количество сделанных фото у стенда
@@ -292,6 +292,7 @@ async def get_analytics():
         # results.append((await session.execute(select(func.count()).where(PointsLog.from_points == "отзыв"))).scalar() + 2033)
         # # Количество запусков после обновления
         # results.append((await session.execute(func.count(User.id))).scalar() - 24000)
+        results.append((await session.execute(select(func.count()).where(PointsLog.from_points == 'ролтон'))).scalar())
     return results
 
 
@@ -305,3 +306,46 @@ async def info_user(tg_id: BigInteger):
         )).fetchall())
 
     return results
+
+
+async def count_number_completed_quest():
+    async with async_session() as session:
+        await session.execute(update(DailyQuests).
+                              where(DailyQuests.date == date.today()).
+                              values(number_completed=DailyQuests.number_completed + 1)
+        )
+        await session.commit()
+
+async def reset_daily():
+    async with async_session() as session:
+        await session.execute(update(User).where(True).values(
+            daily_check=False)
+        )
+        await session.commit()
+
+async def add_count_daily_comments(tg_id: BigInteger):
+    async with async_session() as session:
+        await session.execute(update(User).
+                              where(User.tg_id == tg_id).
+                              values(count_daily_comment=User.count_daily_comment + 1)
+        )
+        await session.commit()
+
+
+async def get_stats_daily_quests():
+    async with async_session() as session:
+        results = (await session.execute(select(DailyQuests).where(DailyQuests.date <= date.today()))).fetchall()
+    return results
+
+
+async def get_current_daily_quests():
+    async with async_session() as session:
+        results = (await session.execute(select(DailyQuests).where(DailyQuests.date == date.today()))).scalar()
+    return results
+
+async def user_set_daily(tg_id: BigInteger):
+    async with async_session() as session:
+        await session.execute(update(User).where(User.tg_id == tg_id).values(
+            daily_check=True)
+        )
+        await session.commit()

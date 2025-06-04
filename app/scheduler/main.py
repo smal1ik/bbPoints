@@ -6,7 +6,7 @@ from arq.connections import RedisSettings, ArqRedis
 from decouple import config as env_config
 from sqlalchemy import BigInteger
 
-from app.database.requests import user_reset_send_comment, reset_all_channel
+from app.database.requests import user_reset_send_comment, reset_all_channel, reset_daily
 
 
 async def startup(ctx):
@@ -25,6 +25,10 @@ async def reset_post(ctx):
     print("Сброс всем отправленных постов")
     await reset_all_channel()
 
+async def reset_daily_quest(ctx):
+    print("Сброс ежедневных заданий")
+    await reset_daily()
+
 class workersettings:
     max_tries = 3
     redis_settings = RedisSettings(host='185.247.185.138', port=6379, password='356211kKmM', database=1, username='default')
@@ -33,5 +37,6 @@ class workersettings:
     allow_abort_jobs = True
     functions = [reset_send_comment, reset_post,]
     cron_jobs = [
-        cron(reset_post, minute=0, hour=0, day=None, month=None, weekday=0)
+        cron(reset_post, minute=0, hour=0, day=None, month=None, weekday=0),
+        cron(reset_daily, minute=0, hour=0),
     ]

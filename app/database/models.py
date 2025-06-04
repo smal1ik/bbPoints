@@ -23,6 +23,8 @@ class User(Base):
     count_comment: Mapped[int] = mapped_column(default=0, nullable=True)
     count_comment_cyberbomb: Mapped[int] = mapped_column(default=1, nullable=True)
     check_activ = mapped_column(Boolean, default=False)
+    count_daily_comment: Mapped[int] = mapped_column(default=0, nullable=True)
+    daily_check = mapped_column(Boolean, default=False)
 
 
 class Point(Base):
@@ -83,18 +85,23 @@ class NumberAcceptVideo(Base):
     social_network: Mapped[str] = mapped_column()
     number: Mapped[int] = mapped_column(default=0)
 
-
 class PointsLog(Base):
     __tablename__ = 'point_logs'
     id: Mapped[int] = mapped_column(primary_key=True)
     tg_id = mapped_column(BigInteger)
     from_points: Mapped[str] = mapped_column()
     number_points: Mapped[int] = mapped_column(default=0)
-
     channel_id = mapped_column(BigInteger, default=0, nullable=True)
     check_id: Mapped[str] = mapped_column(default='', nullable=True)
-
     date = mapped_column(DateTime, nullable=True)
+
+class DailyQuests(Base):
+    __tablename__ = 'daily_quests'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    type_quest = mapped_column(BigInteger)
+    name_quest: Mapped[str] = mapped_column()
+    date = mapped_column(DateTime, nullable=True)
+    number_completed: Mapped[int] = mapped_column(default=0)
 
 async def async_main():
     async with engine.begin() as conn:
