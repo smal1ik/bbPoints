@@ -12,6 +12,8 @@ async def add_points(telegram_id: int, points: int, type_quest: int = 0) -> None
         if current_daily and type_quest == current_daily.type_quest:
             user = await get_user(telegram_id)
             print(user)
+            print(user.tg_id)
+            print(user.count_daily_comment)
             if user and not user.daily_check:
                 if type_quest == 1:
                     number_comment = int(re.findall(r'\d+', current_daily.name_quest)[0])
