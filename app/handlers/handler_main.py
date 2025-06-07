@@ -50,15 +50,15 @@ class AntiManyReply(BaseMiddleware):
         if event.chat.id in self.cache:
             return
         self.cache.add(event.chat.id)
-        try:
-            result = await handler(event, data)
-            return result
-        except Exception as e:
-            if data.get('bots'):
-                await data.get('bots')[0].send_message(654557598, str(e))
-            print(e)
-        finally:
-            self.cache.remove(event.chat.id)
+
+        result = await handler(event, data)
+        return result
+        # except Exception as e:
+        #     if data.get('bots'):
+        #         await data.get('bots')[0].send_message(654557598, str(e))
+        #     print(e)
+        # finally:
+        self.cache.remove(event.chat.id)
 
 router_main.message.middleware(AntiManyReply())
 
