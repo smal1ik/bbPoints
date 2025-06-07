@@ -319,7 +319,7 @@ async def count_number_completed_quest():
 async def reset_daily():
     async with async_session() as session:
         await session.execute(update(User).where(True).values(
-            daily_check=False)
+            daily_check=False, count_daily_comment=0)
         )
         await session.commit()
 

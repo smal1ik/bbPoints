@@ -38,5 +38,5 @@ class workersettings:
     functions = [reset_send_comment, reset_post,]
     cron_jobs = [
         cron(reset_post, minute=0, hour=0, day=None, month=None, weekday=0),
-        cron(reset_daily, minute=0, hour=0),
+        cron(reset_daily_quest, minute=0, hour=0),
     ]
