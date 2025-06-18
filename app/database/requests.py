@@ -102,13 +102,13 @@ async def get_user(tg_id: BigInteger):
         return result
 
 
-async def add_check(check_id: str, retail_name=None, sum_bb=None, n_point=None, count_items_cyberbomb=0):
+async def add_check(check_id: str, retail_name=None, sum_bb=None, n_point=None, count_items_promotion=0):
     """
     Функция добавляет чек в БД
     """
     async with async_session() as session:
         session.add(Check(check_id=check_id, name_shop=retail_name, price_bb=sum_bb, points=n_point,
-                          count_items_cyberbomb=count_items_cyberbomb))
+                          count_items_promotion=count_items_promotion))
         await session.commit()
 
 
@@ -284,8 +284,6 @@ async def get_analytics():
         # Статистика для cyberbomb
         # Количество участвующих пользователей
         results.append((await session.execute(select(func.count()).where(User.check_activ == True))).scalar())
-        # Количество чеков с новыми позициями
-        # results.append((await session.execute(select(func.count()).where(Check.count_items_cyberbomb != 0))).scalar() + 125)
         # # Количество сделанных фото у стенда
         # results.append((await session.execute(select(func.count()).where(PointsLog.from_points == "фото"))).scalar())
         # # Количество отзывов
@@ -293,6 +291,8 @@ async def get_analytics():
         # # Количество запусков после обновления
         # results.append((await session.execute(func.count(User.id))).scalar() - 24000)
         results.append((await session.execute(select(func.count()).where(PointsLog.from_points == 'ролтон'))).scalar())
+        # Количество чеков с новыми позициями
+        results.append((await session.execute(select(func.count()).where(Check.count_items_promotion > 0))).scalar())
     return results
 
 

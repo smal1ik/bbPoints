@@ -41,7 +41,8 @@ class Check(Base):
     name_shop: Mapped[str] = mapped_column(nullable=True)
     price_bb: Mapped[float] = mapped_column(nullable=True, default=0)
     points: Mapped[int] = mapped_column(nullable=True, default=0)
-    count_items_cyberbomb: Mapped[int]  = mapped_column(nullable=True, default=0)
+    count_items_cyberbomb: Mapped[int] = mapped_column(nullable=True, default=0)
+    count_items_promotion: Mapped[int] = mapped_column(nullable=True, default=0)
 
 class Channel(Base):
     __tablename__ = 'channels'

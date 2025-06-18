@@ -99,6 +99,7 @@ async def cmd_message(message: types.Message, state: FSMContext, bot: Bot, comma
 Количество активных пользователей: {stats[12]}
 
 Чеков загрузили с лапшой: {stats[13]}
+Чеков с новой позицией: {stats[14]}
 """
     await message.answer(msg)
 
@@ -308,7 +309,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                 await message.answer("Ох, кажется, очень много запросов на проверки чеки!\n\nСегодня мы не можем принять твой чек, попробуй отправить его завтра 🫶",
                                      reply_markup=kb.single_menu_btn)
             else:
-                n_point, sum_bb, n_bbomb_comments, rolton_check = check_items(items)
+                n_point, sum_bb, count_promotion, rolton_check = check_items(items)
                 # if n_cyberbomb_comments != 0:
                 #     await add_count_comment_cyberbomb(message.from_user.id, n_cyberbomb_comments)
                 if n_point is None:
@@ -324,7 +325,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                         await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                     await active_user(message.from_user.id)
                     retail_name = get_name_retail(retail_place.lower())
-                    await add_check(id_check, retail_name, sum_bb, n_point, n_bbomb_comments)
+                    await add_check(id_check, retail_name, sum_bb, n_point, count_promotion)
                     await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
                     await state.set_state(User.start)
                     ref = encode_payload(message.from_user.id)
@@ -413,7 +414,7 @@ async def answer_message(message: types.Message, state: FSMContext):
             await message.answer("Мнe не удалось найти чек, возможно была допущена ошибка 🔍",
                                  reply_markup=kb.single_menu_btn)
         else:
-            n_point, sum_bb, n_bbomb_comments, rolton_check = check_items(items)
+            n_point, sum_bb, count_promotion, rolton_check = check_items(items)
             # if n_cyberbomb_comments != 0:
             #     await add_count_comment_cyberbomb(message.from_user.id, n_cyberbomb_comments)
             if n_point is None:
@@ -430,7 +431,7 @@ async def answer_message(message: types.Message, state: FSMContext):
                 await active_user(message.from_user.id)
                 await insert_point_log(message.from_user.id, "чек", n_point, check_id=id_check)
                 retail_name = get_name_retail(retail_place.lower())
-                await add_check(id_check, retail_name, sum_bb, n_point, n_bbomb_comments)
+                await add_check(id_check, retail_name, sum_bb, n_point, count_promotion)
                 await message.answer("Просто супер! Поздравляю, твоя копилка ВВ-баллов пополнилась 🥳")
     await state.set_state(User.start)
     ref = encode_payload(message.from_user.id)

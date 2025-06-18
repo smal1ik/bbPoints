@@ -62,7 +62,7 @@ def add_new_id_post(id_post: int):
 
 list_rolton_item_check = ['роллтон', 'rolton', 'лапша роллтон', 'лапша роллтон beauty bomb мохито', 'мохито']
 list_bb_item_check = ['beautybomb', 'bomb', 'beauty bomb', 'hooliguns', 'romcore', 'romecore']
-list_cb_item_check = ['cyberbomb', 'cream blush', 'killer roomba', 'contourator', 'xaela ter', 'eyepocalypce',
+list_promotion_item_check = ['cyberbomb', 'cream blush', 'killer roomba', 'contourator', 'xaela ter', 'eyepocalypce',
                       'not found', 'doomsday', '1101001', 'toxic waste', 'overloaded', 'skipidarushka',
                       'dirty lick', 'robochic', 'machine oil', 'heavy water', 'chrome nails', 'eye protector',
                       'walkie talkie', 'spy drone', 'furiosa', '2095000985127', '4670220301858', '4670220301865',
@@ -71,9 +71,10 @@ list_cb_item_check = ['cyberbomb', 'cream blush', 'killer roomba', 'contourator'
 
 def check_items(items):
     res_sum = 0
-    n_bbomb_items = 0
     points = 0
     rolton_check = False
+    promotion_sum = 0
+    count_promotion = 0
     for item in items:
         text = item['name'].lower()
         price = int(item['price'])
@@ -82,11 +83,17 @@ def check_items(items):
         for item_split in text.split():
             if item_split in list_rolton_item_check:
                 rolton_check = True
-                res_sum += price
+                promotion_sum += price
+                count_promotion += 1
                 flag = True
                 break
             if item_split in list_bb_item_check:
                 res_sum += price
+                flag = True
+                break
+            if item_split in list_promotion_item_check:
+                promotion_sum += price
+                count_promotion += 1
                 flag = True
                 break
 
@@ -95,7 +102,15 @@ def check_items(items):
 
         for elem in list_rolton_item_check:
             if elem in text:
+                promotion_sum += price
+                count_promotion += 1
                 rolton_check = True
+                break
+
+        for elem in list_promotion_item_check:
+            if elem in text:
+                promotion_sum += price
+                count_promotion += 1
                 break
 
         for elem in list_bb_item_check:
@@ -103,22 +118,23 @@ def check_items(items):
                 res_sum += price
                 break
 
-    # flag = True
-    # if cyberbomb_sum >= 500000:
-    #     points += 4000
-    # elif cyberbomb_sum >= 300000:
-    #     points += 2000
-    # elif cyberbomb_sum >= 150000:
-    #     points += 800
-    # elif cyberbomb_sum >= 80000:
-    #     points += 600
-    # elif cyberbomb_sum >= 50000:
-    #     points += 400
-    # elif cyberbomb_sum >= 30000:
-    #     points += 200
-    # else:
-    #     res_sum += cyberbomb_sum
-    #     flag = False
+
+    flag = True
+    if promotion_sum >= 500000:
+        points += 3000
+    elif promotion_sum >= 300000:
+        points += 1600
+    elif promotion_sum >= 150000:
+        points += 800
+    elif promotion_sum >= 80000:
+        points += 500
+    elif promotion_sum >= 50000:
+        points += 300
+    elif promotion_sum >= 30000:
+        points += 100
+    else:
+        res_sum += promotion_sum
+        flag = False
 
     if res_sum >= 500000:
         points += 1500
@@ -133,10 +149,10 @@ def check_items(items):
     elif res_sum >= 30000:
         points += 50
     if points == 0:
-        return None, None, n_bbomb_items, rolton_check
-    # if flag:
-    #     res_sum += cyberbomb_sum
-    return points, res_sum / 100, n_bbomb_items, rolton_check
+        return None, None, count_promotion, rolton_check
+    if flag:
+        res_sum += promotion_sum
+    return points, res_sum / 100, count_promotion, rolton_check,
 
 
 retail_names = {
