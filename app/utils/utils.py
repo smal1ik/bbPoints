@@ -62,11 +62,30 @@ def add_new_id_post(id_post: int):
 
 list_rolton_item_check = ['роллтон', 'rolton', 'лапша роллтон', 'лапша роллтон beauty bomb мохито', 'мохито']
 list_bb_item_check = ['beautybomb', 'bomb', 'beauty bomb', 'hooliguns', 'romcore', 'romecore']
-list_promotion_item_check = ['cyberbomb', 'cream blush', 'killer roomba', 'contourator', 'xaela ter', 'eyepocalypce',
-                      'not found', 'doomsday', '1101001', 'toxic waste', 'overloaded', 'skipidarushka',
-                      'dirty lick', 'robochic', 'machine oil', 'heavy water', 'chrome nails', 'eye protector',
-                      'walkie talkie', 'spy drone', 'furiosa', '2095000985127', '4670220301858', '4670220301865',
-                      '4680191182141', '4670139331595']
+list_promotion_item_check = [
+                            "Mashed Foundation",
+                            "Party Starter",
+                            "Salt & Pepper",
+                            "Zamazik",
+                            "Noodlicious",
+                            "Rollton",
+                            "Beauty Recipe",
+                            "Browstick",
+                            "Sriracha Plump",
+                            "Lippie Sause",
+                            "Rollton Glaze",
+                            "Glowing Curry",
+                            "Spicy Chicken",
+                            "Herbal Shrimp",
+                            "Avocado & Sea Salt",
+                            "Rosemary & Black Pepper",
+                            "Pumpkin Spice & Basil",
+                            "Ramen Bath",
+                            "Rollton Vibes",
+                            "Double Noodle",
+                            "Snack Break",
+                            "Ramen Extensions"]
+
 
 
 def check_items(items):
@@ -80,18 +99,19 @@ def check_items(items):
         price = int(item['price'])
         flag = False
 
-        for item_split in text.split():
-            if item_split in list_rolton_item_check:
-                rolton_check = True
+        for elem in list_rolton_item_check:
+            if elem.lower() in text:
                 promotion_sum += price
                 count_promotion += 1
+                rolton_check = True
                 flag = True
                 break
-            if item_split in list_bb_item_check:
-                res_sum += price
-                flag = True
-                break
-            if item_split in list_promotion_item_check:
+
+        if flag:
+            continue
+
+        for elem in list_promotion_item_check:
+            if elem.lower() in text:
                 promotion_sum += price
                 count_promotion += 1
                 flag = True
@@ -100,21 +120,26 @@ def check_items(items):
         if flag:
             continue
 
-        for elem in list_rolton_item_check:
-            if elem in text:
-                promotion_sum += price
-                count_promotion += 1
-                rolton_check = True
-                break
-
-        for elem in list_promotion_item_check:
-            if elem in text:
-                promotion_sum += price
-                count_promotion += 1
-                break
-
         for elem in list_bb_item_check:
-            if elem in text:
+            if elem.lower() in text:
+                res_sum += price
+                flag = True
+                break
+
+        if flag:
+            continue
+
+        for item_split in text.split():
+            if item_split in list_rolton_item_check:
+                rolton_check = True
+                promotion_sum += price
+                count_promotion += 1
+                break
+            if item_split in list_promotion_item_check:
+                promotion_sum += price
+                count_promotion += 1
+                break
+            if item_split in list_bb_item_check:
                 res_sum += price
                 break
 
