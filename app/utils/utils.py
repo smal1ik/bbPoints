@@ -61,30 +61,32 @@ def add_new_id_post(id_post: int):
         file.close()
 
 list_rolton_item_check = ['роллтон', 'rolton', 'лапша роллтон', 'лапша роллтон beauty bomb мохито', 'мохито']
-list_bb_item_check = ['beautybomb', 'bomb', 'beauty bomb', 'hooliguns', 'romcore', 'romecore']
-list_promotion_item_check = [
-                            "Mashed Foundation",
-                            "Party Starter",
-                            "Salt & Pepper",
-                            "Zamazik",
-                            "Noodlicious",
-                            "Rollton",
-                            "Beauty Recipe",
-                            "Browstick",
-                            "Sriracha Plump",
-                            "Lippie Sause",
-                            "Rollton Glaze",
-                            "Glowing Curry",
-                            "Spicy Chicken",
-                            "Herbal Shrimp",
-                            "Avocado & Sea Salt",
-                            "Rosemary & Black Pepper",
-                            "Pumpkin Spice & Basil",
-                            "Ramen Bath",
-                            "Rollton Vibes",
-                            "Double Noodle",
-                            "Snack Break",
-                            "Ramen Extensions"]
+list_bb_item_check = ['beautybomb', 'bomb', 'beauty bomb', 'hooliguns', 'romcore', 'romecore', 'doll', 'dollhouse',
+                      'hs', 'miss', 'plushy', 'sn']
+list_promotion_item_check = []
+# list_promotion_item_check = [
+#                             "Mashed Foundation",
+#                             "Party Starter",
+#                             "Salt & Pepper",
+#                             "Zamazik",
+#                             "Noodlicious",
+#                             "Rollton",
+#                             "Beauty Recipe",
+#                             "Browstick",
+#                             "Sriracha Plump",
+#                             "Lippie Sause",
+#                             "Rollton Glaze",
+#                             "Glowing Curry",
+#                             "Spicy Chicken",
+#                             "Herbal Shrimp",
+#                             "Avocado & Sea Salt",
+#                             "Rosemary & Black Pepper",
+#                             "Pumpkin Spice & Basil",
+#                             "Ramen Bath",
+#                             "Rollton Vibes",
+#                             "Double Noodle",
+#                             "Snack Break",
+#                             "Ramen Extensions"]
 
 
 
