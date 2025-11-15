@@ -293,6 +293,12 @@ async def get_analytics():
         results.append((await session.execute(select(func.count()).where(PointsLog.from_points == 'ролтон'))).scalar())
         # Количество чеков с новыми позициями
         results.append((await session.execute(select(func.count()).where(Check.count_items_promotion > 0))).scalar())
+        # Количество товаров из зя
+        results.append((await session.execute(select(func.sum(Check.count_items_promotion)).where(Check.name_shop == 'яблоко'))).scalar())
+        # Количество товаров из магнита
+        results.append((await session.execute(select(func.sum(Check.count_items_promotion)).where(Check.name_shop == 'магнит'))).scalar())
+        # Количество аукционных товаров
+        results.append((await session.execute(select(func.sum(Check.count_items_promotion))).scalar()))
     return results
 
 

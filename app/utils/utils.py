@@ -60,57 +60,47 @@ def add_new_id_post(id_post: int):
         file.write(" ".join(str(x) for x in list_channel_message))
         file.close()
 
-list_rolton_item_check = ['роллтон', 'rolton', 'лапша роллтон', 'лапша роллтон beauty bomb мохито', 'мохито']
 list_bb_item_check = ['beautybomb', 'bomb', 'beauty bomb', 'hooliguns', 'romcore', 'romecore', 'doll', 'dollhouse',
                       'hs', 'miss', 'plushy', 'sn']
-list_promotion_item_check = []
-# list_promotion_item_check = [
-#                             "Mashed Foundation",
-#                             "Party Starter",
-#                             "Salt & Pepper",
-#                             "Zamazik",
-#                             "Noodlicious",
-#                             "Rollton",
-#                             "Beauty Recipe",
-#                             "Browstick",
-#                             "Sriracha Plump",
-#                             "Lippie Sause",
-#                             "Rollton Glaze",
-#                             "Glowing Curry",
-#                             "Spicy Chicken",
-#                             "Herbal Shrimp",
-#                             "Avocado & Sea Salt",
-#                             "Rosemary & Black Pepper",
-#                             "Pumpkin Spice & Basil",
-#                             "Ramen Bath",
-#                             "Rollton Vibes",
-#                             "Double Noodle",
-#                             "Snack Break",
-#                             "Ramen Extensions"]
+list_promotion_item_check = [
+            "Lucky", "Horsie",
+            "Sheriff", "Star",
+            "Blush", "Pony", "Club",
+            "Dream", "Hunter",
+            "Free", "Spirit",
+            "Wild", "West",
+            "Wild", "West",
+            "Mojave", "Magic",
+            "Mojave", "Magic",
+            "Bandito", "Desperado",
+            "Bandito", "Desperado",
+            "Cactus", "Flower",
+            "Noon", "Saloon",
+            "Noon", "Saloon",
+            "Arrowhead",
+            "Beauty", "Coyote",
+            "Beauty", "Coyote",
+            "Cowgirl",
+            "Desert", "Eagle",
+            "Yee-Haw!",
+            "Gold", "Field",
+            "Western", "Bull",
+            "Horns'n", "Hooves",
+            "Bounty", "Hunter",
+            "Sleepy", "Totem"
+            ]
 
 
 
-def check_items(items):
+def check_items(items, retail_name):
     res_sum = 0
     points = 0
-    rolton_check = False
     promotion_sum = 0
     count_promotion = 0
     for item in items:
         text = item['name'].lower()
         price = int(item['price'])
         flag = False
-
-        for elem in list_rolton_item_check:
-            if elem.lower() in text:
-                promotion_sum += price
-                count_promotion += 1
-                rolton_check = True
-                flag = True
-                break
-
-        if flag:
-            continue
 
         for elem in list_promotion_item_check:
             if elem.lower() in text:
@@ -132,11 +122,6 @@ def check_items(items):
             continue
 
         for item_split in text.split():
-            if item_split in list_rolton_item_check:
-                rolton_check = True
-                promotion_sum += price
-                count_promotion += 1
-                break
             if item_split in list_promotion_item_check:
                 promotion_sum += price
                 count_promotion += 1
@@ -175,16 +160,35 @@ def check_items(items):
         points += 150
     elif res_sum >= 30000:
         points += 50
+
+    if retail_name == 'магнит' or retail_name == 'яблоко':
+        flag = False
+        res_sum += promotion_sum
+        points = 0
+        count_promotion = len(items)
+        if res_sum >= 500000:
+            points += 1500 * 3
+        elif res_sum >= 300000:
+            points += 800 * 3
+        elif res_sum >= 150000:
+            points += 400 * 3
+        elif res_sum >= 80000:
+            points += 250 * 3
+        elif res_sum >= 50000:
+            points += 150 * 3
+        elif res_sum >= 30000:
+            points += 50 * 3
+
     if points == 0:
-        return None, None, count_promotion, rolton_check
+        return None, None, count_promotion
     if flag:
         res_sum += promotion_sum
-    return points, res_sum / 100, count_promotion, rolton_check,
+    return points, res_sum / 100, count_promotion
 
 
 retail_names = {
     'магнит': ['магнит', 'magnit'],
-    'яблоко': ['яблоко', 'золотое яблоко', 'goldapple'],
+    'яблоко': ['яблоко', 'золотое яблоко', 'goldapple', 'goldenapple'],
     'рив': ['рив гош', 'рив', 'rivegauche'],
     'лэтуаль': ['лэтуаль', 'letu'],
     'ozon': ['ozon', 'озон'],

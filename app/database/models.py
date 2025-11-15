@@ -96,6 +96,7 @@ class PointsLog(Base):
     check_id: Mapped[str] = mapped_column(default='', nullable=True)
     date = mapped_column(DateTime, nullable=True)
 
+
 class DailyQuests(Base):
     __tablename__ = 'daily_quests'
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -103,6 +104,7 @@ class DailyQuests(Base):
     name_quest: Mapped[str] = mapped_column()
     date = mapped_column(DateTime, nullable=True)
     number_completed: Mapped[int] = mapped_column(default=0)
+
 
 async def async_main():
     async with engine.begin() as conn:

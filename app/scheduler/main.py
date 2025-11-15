@@ -25,9 +25,11 @@ async def reset_post(ctx):
     print("Сброс всем отправленных постов")
     await reset_all_channel()
 
+
 async def reset_daily_quest(ctx):
     print("Сброс ежедневных заданий")
     await reset_daily()
+
 
 class workersettings:
     max_tries = 3
