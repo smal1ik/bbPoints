@@ -298,7 +298,7 @@ async def get_analytics():
         # Количество товаров из магнита
         results.append((await session.execute(select(func.sum(Check.count_items_promotion)).where(Check.name_shop == 'магнит'))).scalar())
         # Количество аукционных товаров
-        results.append((await session.execute(select(func.sum(Check.count_items_promotion))).scalar()))
+        results.append((await session.execute(select(func.sum(Check.count_items_promotion)))).scalar())
     return results
 
 
